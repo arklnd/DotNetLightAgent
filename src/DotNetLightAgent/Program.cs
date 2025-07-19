@@ -10,13 +10,14 @@ var modelId = "qwen3"; // or any other model you have installed in Ollama
 var endpoint = new Uri("http://172.30.245.214:11434"); // default Ollama endpoint
 
 // Create a kernel with Ollama chat completion
-var builder = Kernel.CreateBuilder().AddOllamaChatCompletion(modelId, endpoint);
+var kernelBuilder = Kernel.CreateBuilder();
+kernelBuilder.AddOllamaChatCompletion(modelId, endpoint);
 
 // Add enterprise components
-builder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Information));
+kernelBuilder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Information));
 
 // Build the kernel
-Kernel kernel = builder.Build();
+Kernel kernel = kernelBuilder.Build();
 var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 
 // Add a plugin (the LightsPlugin class is defined below)
