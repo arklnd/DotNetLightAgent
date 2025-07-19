@@ -51,7 +51,7 @@ do
             kernel: kernel);
 
         // Print the results
-        Console.WriteLine("Assistant > " + result);
+        Console.WriteLine("Agent > " + result);
 
         // Add the message from the agent to the chat history
         history.AddMessage(result.Role, result.Content ?? string.Empty);
