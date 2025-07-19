@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"args": [
+				"run",
+				"--project",
+				"src/DotNetLightAgent/DotNetLightAgent.csproj"
+			],
+			"command": "dotnet",
+			"group": "build",
+			"label": "run",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"type": "shell"
+		}
+	]
+}
