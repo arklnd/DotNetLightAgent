@@ -5,6 +5,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <NoWarn>$(NoWarn);SKEXP0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.7" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.60.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.60.0-alpha" />
+    <PackageReference Include="ModelContextProtocol.Core" Version="0.3.0-preview.3" />
   </ItemGroup>
 
 </Project>

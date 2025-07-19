@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using DotNetLightAgent.Plugins;
+using ModelContextProtocol.Client;
 
 // Populate values for your Ollama deployment
 var modelId = "qwen3"; // or any other model you have installed in Ollama
@@ -22,6 +23,31 @@ var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 
 // Add a plugin (the LightsPlugin class is defined below)
 kernel.Plugins.AddFromType<LightsPlugin>("Lights");
+
+// Stdio based MCP
+await using var mcpClient = await McpClientFactory.CreateAsync(
+    new StdioClientTransport(new StdioClientTransportOptions
+    {
+        Name = "FileSystem",
+        Command = "npx",
+        Arguments = ["-y", "@modelcontextprotocol/server-filesystem", "./src/"]
+    })
+);
+
+// Alternative: HTTP-based MCP server
+// var httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:5249/sse") };
+// var serverConfig = new McpServerConfig
+// {
+//     Id = "SampleServer",
+//     Name = "MyCustomMcpServer",
+//     Location = httpClient.BaseAddress.ToString(),
+//     TransportType = TransportTypes.Sse
+// };
+// var mcpClient = await McpClientFactory.CreateAsync(serverConfig, new McpClientOptions());
+
+// Retrieve available tools and expose as SK functions
+var tools = await mcpClient.ListToolsAsync();
+kernel.Plugins.AddFromFunctions("FileSystem", tools.Select(aiFunction => aiFunction.AsKernelFunction()));
 
 // Enable planning
 PromptExecutionSettings promptExecutionSettings = new()
@@ -43,7 +69,7 @@ do
     userInput = Console.ReadLine();
 
     // Add user input
-    if (userInput != null)
+    if (!string.IsNullOrWhiteSpace(userInput))
     {
         history.AddUserMessage(userInput);
 
