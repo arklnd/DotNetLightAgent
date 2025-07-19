@@ -1,13 +1,47 @@
 ﻿// Import packages
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using DotNetLightAgent.Models;
 using DotNetLightAgent.Plugins;
 
-// Populate values for your Ollama deployment
-var modelId = "qwen3"; // or any other model you have installed in Ollama
-var endpoint = new Uri("http://172.30.245.214:11434"); // default Ollama endpoint
+// Build configuration
+var basePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? Directory.GetCurrentDirectory();
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(basePath)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables()
+    .Build();
+
+// Get Ollama configuration
+var ollamaOptions = configuration.GetSection(OllamaOptions.SectionName).Get<OllamaOptions>() ?? new OllamaOptions();
+
+// Validate configuration
+try
+{
+    ollamaOptions.Validate();
+}
+catch (InvalidOperationException ex)
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine($"Configuration Error: {ex.Message}");
+    Console.ResetColor();
+    return;
+}
+
+// Log the configuration being used
+Console.WriteLine($"Using Ollama configuration:");
+Console.WriteLine($"  Model ID: {ollamaOptions.ModelId}");
+Console.WriteLine($"  Endpoint: {ollamaOptions.Endpoint}");
+Console.WriteLine($"  Environment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}");
+Console.WriteLine();
+
+// Populate values from configuration
+var modelId = ollamaOptions.ModelId;
+var endpoint = new Uri(ollamaOptions.Endpoint);
 
 // Create a kernel with Ollama chat completion
 var builder = Kernel.CreateBuilder().AddOllamaChatCompletion(modelId, endpoint);
