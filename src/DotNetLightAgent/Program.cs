@@ -13,7 +13,7 @@ var endpoint = new Uri("http://172.30.245.214:11434"); // default Ollama endpoin
 var builder = Kernel.CreateBuilder().AddOllamaChatCompletion(modelId, endpoint);
 
 // Add enterprise components
-builder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Trace));
+builder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Information));
 
 // Build the kernel
 Kernel kernel = builder.Build();
