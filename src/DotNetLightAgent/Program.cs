@@ -64,7 +64,7 @@ do
 {
     // Collect user input
     Console.ForegroundColor = ConsoleColor.Green;
-    Console.Write("User > ");
+    Console.Write("[🙂] > ");
     Console.ResetColor();
     userInput = Console.ReadLine();
 
@@ -81,7 +81,7 @@ do
 
         // Print the results
         Console.ForegroundColor = ConsoleColor.Blue;
-        Console.Write("Agent > ");
+        Console.Write("[🤖] > ");
         Console.ResetColor();
         Console.WriteLine(result);
 
