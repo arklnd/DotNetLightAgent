@@ -4,8 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Ollama;
-using System.ComponentModel;
-using System.Text.Json.Serialization;
+using DotNetLightAgent.Plugins;
 
 // Populate values for your Ollama deployment
 var modelId = "qwen3"; // or any other model you have installed in Ollama
@@ -59,50 +58,3 @@ do
         history.AddMessage(result.Role, result.Content ?? string.Empty);
     }
 } while (userInput is not null);
-
-public class LightsPlugin
-{
-    // Mock data for the lights
-    private readonly List<LightModel> lights = new()
-    {
-        new LightModel { Id = 1, Name = "Table Lamp", IsOn = false },
-        new LightModel { Id = 2, Name = "Porch light", IsOn = false },
-        new LightModel { Id = 3, Name = "Chandelier", IsOn = true }
-    };
-
-    [KernelFunction("get_lights")]
-    [Description("Gets a list of lights and their current state")]
-    public List<LightModel> GetLights()
-    {
-        return lights;
-    }
-
-    [KernelFunction("change_state")]
-    [Description("Changes the state of the light")]
-    public LightModel? ChangeState(int id, bool isOn)
-    {
-        var light = lights.FirstOrDefault(light => light.Id == id);
-
-        if (light == null)
-        {
-            return null;
-        }
-
-        // Update the light with the new state
-        light.IsOn = isOn;
-
-        return light;
-    }
-}
-
-public class LightModel
-{
-    [JsonPropertyName("id")]
-    public int Id { get; set; }
-
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = string.Empty;
-
-    [JsonPropertyName("is_on")]
-    public bool? IsOn { get; set; }
-}
