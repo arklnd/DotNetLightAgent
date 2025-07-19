@@ -36,7 +36,9 @@ string? userInput;
 do
 {
     // Collect user input
+    Console.ForegroundColor = ConsoleColor.Green;
     Console.Write("User > ");
+    Console.ResetColor();
     userInput = Console.ReadLine();
 
     // Add user input
@@ -51,7 +53,10 @@ do
             kernel: kernel);
 
         // Print the results
-        Console.WriteLine("Agent > " + result);
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.Write("Agent > ");
+        Console.ResetColor();
+        Console.WriteLine(result);
 
         // Add the message from the agent to the chat history
         history.AddMessage(result.Role, result.Content ?? string.Empty);
