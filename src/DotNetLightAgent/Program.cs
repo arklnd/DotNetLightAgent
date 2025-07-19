@@ -3,17 +3,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Microsoft.SemanticKernel.Connectors.Ollama;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
-// Populate values from your OpenAI deployment
-var modelId = "";
-var endpoint = "";
-var apiKey = "";
+// Populate values for your Ollama deployment
+var modelId = "qwen3"; // or any other model you have installed in Ollama
+var endpoint = new Uri("http://172.30.245.214:11434"); // default Ollama endpoint
 
-// Create a kernel with Azure OpenAI chat completion
-var builder = Kernel.CreateBuilder().AddAzureOpenAIChatCompletion(modelId, endpoint, apiKey);
+// Create a kernel with Ollama chat completion
+var builder = Kernel.CreateBuilder().AddOllamaChatCompletion(modelId, endpoint);
 
 // Add enterprise components
 builder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Trace));
@@ -26,7 +25,7 @@ var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 kernel.Plugins.AddFromType<LightsPlugin>("Lights");
 
 // Enable planning
-OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()
+PromptExecutionSettings promptExecutionSettings = new()
 {
     FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
 };
@@ -50,7 +49,7 @@ do
         // Get the response from the AI
         var result = await chatCompletionService.GetChatMessageContentAsync(
             history,
-            executionSettings: openAIPromptExecutionSettings,
+            executionSettings: promptExecutionSettings,
             kernel: kernel);
 
         // Print the results
