@@ -30,13 +30,14 @@ IMcpClient? mcpClient = null;
 try
 {
     Console.WriteLine("Attempting to connect to MCP FileSystem server...");
-    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
     mcpClient = await McpClientFactory.CreateAsync(
         new StdioClientTransport(new StdioClientTransportOptions
         {
             Name = "FileSystem",
             Command = "npx",
-            Arguments = ["-y", "@modelcontextprotocol/server-filesystem", "./src/"]
+            Arguments = ["-y", "@modelcontextprotocol/server-filesystem", "./src/"],
+            ShutdownTimeout = TimeSpan.FromSeconds(90)
         }),
         new McpClientOptions(),
         null,
