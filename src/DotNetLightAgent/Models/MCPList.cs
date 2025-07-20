@@ -13,7 +13,7 @@ namespace DotNetLightAgent.Models
             {
                 Name = "FileSystem",
                 Command = "npx",
-                Arguments = ["-y", "@modelcontextprotocol/server-filesystem", "./src/"],
+                Arguments = ["-y", "@modelcontextprotocol/server-filesystem", "C:\\ARIJIT"],
                 ShutdownTimeout = TimeSpan.FromSeconds(10)
             },
             new StdioClientTransportOptions
@@ -34,7 +34,7 @@ namespace DotNetLightAgent.Models
             {
                 Name = "git",
                 Command = "python",
-                Arguments = ["-m", "mcp_server_git", "--repository", "./"],
+                Arguments = ["-m", "mcp_server_git"],
                 ShutdownTimeout = TimeSpan.FromSeconds(10)
             },
             new StdioClientTransportOptions
