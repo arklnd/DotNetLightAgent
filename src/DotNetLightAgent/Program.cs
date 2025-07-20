@@ -6,6 +6,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using DotNetLightAgent.Plugins;
 using ModelContextProtocol.Client;
 using Microsoft.SemanticKernel.Connectors.Ollama;
+using DotNetLightAgent.Models;
 
 // Populate values for your Ollama deployment
 var modelId = "qwen3"; // or any other model you have installed in Ollama
@@ -25,38 +26,36 @@ var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 // Add a plugin (the LightsPlugin class is defined below)
 kernel.Plugins.AddFromType<LightsPlugin>("Lights");
 
-// Stdio based MCP with error handling
 IMcpClient? mcpClient = null;
-try
+// Stdio based MCP with error handling
+foreach (var stdmcp in MCPList.stdioClientTransportOptions)
 {
-    Console.WriteLine("Attempting to connect to MCP FileSystem server...");
-    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
-    mcpClient = await McpClientFactory.CreateAsync(
-        new StdioClientTransport(new StdioClientTransportOptions
-        {
-            Name = "FileSystem",
-            Command = "npx",
-            Arguments = ["-y", "@modelcontextprotocol/server-filesystem", "./src/"],
-            ShutdownTimeout = TimeSpan.FromSeconds(90)
-        }),
-        new McpClientOptions(),
-        null,
-        cts.Token
-    );
+    try
+    {
+        Console.WriteLine($"Attempting to connect to MCP {stdmcp.Name} server...");
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        mcpClient = await McpClientFactory.CreateAsync(
+            new StdioClientTransport(stdmcp),
+            new McpClientOptions(),
+            null,
+            cts.Token
+        );
 
-    // Retrieve available tools and expose as SK functions
-    var tools = await mcpClient.ListToolsAsync();
-    kernel.Plugins.AddFromFunctions("FileSystem", tools.Select(aiFunction => aiFunction.AsKernelFunction()));
-    Console.WriteLine($"Successfully connected to MCP server with {tools.Count} tools available.");
+        // Retrieve available tools and expose as SK functions
+        var tools = await mcpClient.ListToolsAsync();
+        kernel.Plugins.AddFromFunctions(stdmcp.Name, tools.Select(aiFunction => aiFunction.AsKernelFunction()));
+        Console.WriteLine($"Successfully connected to MCP server with {tools.Count} tools available.");
+    }
+    catch (Exception ex)
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine($"Warning: Could not connect to MCP {stdmcp.Name} server: {ex.Message}");
+        Console.WriteLine($"The application will continue without MCP {stdmcp.Name} tools.");
+        Console.ResetColor();
+        mcpClient = null;
+    }
 }
-catch (Exception ex)
-{
-    Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.WriteLine($"Warning: Could not connect to MCP FileSystem server: {ex.Message}");
-    Console.WriteLine("The application will continue without MCP filesystem tools.");
-    Console.ResetColor();
-    mcpClient = null;
-}
+
 
 // Alternative: HTTP-based MCP server
 // var httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:5249/sse") };

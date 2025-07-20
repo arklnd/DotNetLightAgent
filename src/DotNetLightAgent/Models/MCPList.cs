@@ -1,0 +1,36 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using ModelContextProtocol.Client;
+
+namespace DotNetLightAgent.Models
+{
+    public class MCPList
+    {
+        public static List<StdioClientTransportOptions> stdioClientTransportOptions = [
+            new StdioClientTransportOptions
+            {
+                Name = "FileSystem",
+                Command = "npx",
+                Arguments = ["-y", "@modelcontextprotocol/server-filesystem", "./src/"],
+                ShutdownTimeout = TimeSpan.FromSeconds(10)
+            },
+            new StdioClientTransportOptions
+            {
+                Name = "Sequential_Thinker",
+                Command = "npx",
+                Arguments = ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+                ShutdownTimeout = TimeSpan.FromSeconds(10)
+            },
+            new StdioClientTransportOptions
+            {
+                Name = "fetch_web",
+                Command = "python",
+                Arguments = ["-m", "mcp_server_fetch"],
+                ShutdownTimeout = TimeSpan.FromSeconds(10)
+            },
+
+        ];
+    }
+}
