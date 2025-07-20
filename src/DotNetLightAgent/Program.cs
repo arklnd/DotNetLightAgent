@@ -99,20 +99,25 @@ do
     {
         history.AddUserMessage(userInput);
 
-        // Get the response from the AI
-        var result = await chatCompletionService.GetChatMessageContentAsync(
-            history,
-            executionSettings: ollamaPromptExecutionSettings,
-            kernel: kernel);
-
-        // Print the results
+        // Print the AI response header
         Console.ForegroundColor = ConsoleColor.Blue;
         Console.Write("[🤖] > ");
         Console.ResetColor();
-        Console.WriteLine(result);
 
-        // Add the message from the agent to the chat history
-        history.AddMessage(result.Role, result.Content ?? string.Empty);
+        // Get the streaming response from the AI
+        string fullResponse = "";
+        await foreach (var chunk in chatCompletionService.GetStreamingChatMessageContentsAsync(
+            history,
+            executionSettings: ollamaPromptExecutionSettings,
+            kernel: kernel))
+        {
+            Console.Write(chunk.Content); // Stream response as it arrives
+            fullResponse += chunk.Content;
+        }
+        Console.WriteLine(); // Add newline after streaming is complete
+
+        // Add the complete message from the agent to the chat history
+        history.AddAssistantMessage(fullResponse);
     }
 } while (userInput is not null);
 
