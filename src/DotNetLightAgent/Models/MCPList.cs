@@ -30,7 +30,20 @@ namespace DotNetLightAgent.Models
                 Arguments = ["-m", "mcp_server_fetch"],
                 ShutdownTimeout = TimeSpan.FromSeconds(10)
             },
-
+            new StdioClientTransportOptions
+            {
+                Name = "git",
+                Command = "python",
+                Arguments = ["-m", "mcp_server_git", "--repository", "./"],
+                ShutdownTimeout = TimeSpan.FromSeconds(10)
+            },
+            new StdioClientTransportOptions
+            {
+                Name = "time",
+                Command = "python",
+                Arguments = ["-m", "mcp_server_time"],
+                ShutdownTimeout = TimeSpan.FromSeconds(10)
+            },
         ];
     }
 }

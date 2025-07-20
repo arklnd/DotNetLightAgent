@@ -32,7 +32,7 @@ foreach (var stdmcp in MCPList.stdioClientTransportOptions)
 {
     try
     {
-        Console.WriteLine($"Attempting to connect to MCP {stdmcp.Name} server...");
+        Console.Write($"[⚪] Attempting to connect to MCP: <{stdmcp.Name}> ..");
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         mcpClient = await McpClientFactory.CreateAsync(
             new StdioClientTransport(stdmcp),
@@ -44,13 +44,13 @@ foreach (var stdmcp in MCPList.stdioClientTransportOptions)
         // Retrieve available tools and expose as SK functions
         var tools = await mcpClient.ListToolsAsync();
         kernel.Plugins.AddFromFunctions(stdmcp.Name, tools.Select(aiFunction => aiFunction.AsKernelFunction()));
-        Console.WriteLine($"Successfully connected to MCP server with {tools.Count} tools available.");
+        Console.WriteLine($"\r[🟢] Successfully connected to <{stdmcp.Name}> with {tools.Count} tools available.");
     }
     catch (Exception ex)
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"Warning: Could not connect to MCP {stdmcp.Name} server: {ex.Message}");
-        Console.WriteLine($"The application will continue without MCP {stdmcp.Name} tools.");
+        Console.WriteLine($"[🟡] Could not connect to MCP <{stdmcp.Name}> server: {ex.Message}");
+        Console.WriteLine($"The application will continue without MCP <{stdmcp.Name}> tools.");
         Console.ResetColor();
         mcpClient = null;
     }
