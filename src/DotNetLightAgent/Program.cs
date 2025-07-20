@@ -5,6 +5,7 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using DotNetLightAgent.Plugins;
 using ModelContextProtocol.Client;
+using Microsoft.SemanticKernel.Connectors.Ollama;
 
 // Populate values for your Ollama deployment
 var modelId = "qwen3"; // or any other model you have installed in Ollama
@@ -73,6 +74,13 @@ PromptExecutionSettings promptExecutionSettings = new()
     FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
 };
 
+OllamaPromptExecutionSettings ollamaPromptExecutionSettings = new()
+{
+    FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+    Temperature = 0.6f,
+    TopP = (float?)0.95,
+    TopK = 40,
+};
 // Create a history store the conversation
 var history = new ChatHistory();
 
@@ -94,7 +102,7 @@ do
         // Get the response from the AI
         var result = await chatCompletionService.GetChatMessageContentAsync(
             history,
-            executionSettings: promptExecutionSettings,
+            executionSettings: ollamaPromptExecutionSettings,
             kernel: kernel);
 
         // Print the results
