@@ -5,7 +5,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <NoWarn>$(NoWarn);SKEXP0001</NoWarn>
+    <NoWarn>$(NoWarn);SKEXP0001;CS8604</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
