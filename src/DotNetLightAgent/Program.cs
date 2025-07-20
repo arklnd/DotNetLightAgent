@@ -49,7 +49,7 @@ foreach (var stdmcp in MCPList.stdioClientTransportOptions)
     catch (Exception ex)
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"[🟡] Could not connect to MCP <{stdmcp.Name}> server: {ex.Message}");
+        Console.WriteLine($"\r[🟡] Could not connect to MCP <{stdmcp.Name}> server: {ex.Message}");
         Console.WriteLine($"The application will continue without MCP <{stdmcp.Name}> tools.");
         Console.ResetColor();
         mcpClient = null;
