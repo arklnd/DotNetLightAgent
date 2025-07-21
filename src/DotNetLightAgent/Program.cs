@@ -42,6 +42,7 @@ foreach (var stdmcp in MCPList.stdioClientTransportOptions)
         );
 
         // Retrieve available tools and expose as SK functions
+        // IList<McpClientTool> tools = await mcpClient.ListToolsAsync();
         var tools = await mcpClient.ListToolsAsync();
         kernel.Plugins.AddFromFunctions(stdmcp.Name, tools.Select(aiFunction => aiFunction.AsKernelFunction()));
         Console.WriteLine($"\r[🟢] Successfully connected to <{stdmcp.Name}> with {tools.Count} tools available.");
