@@ -44,6 +44,13 @@ namespace DotNetLightAgent.Models
                 Arguments = ["-m", "mcp_server_time"],
                 ShutdownTimeout = TimeSpan.FromSeconds(10)
             },
+            new StdioClientTransportOptions
+            {
+                Name = "playwright",
+                Command = "npx",
+                Arguments = ["@playwright/mcp@latest"],
+                ShutdownTimeout = TimeSpan.FromSeconds(10)
+            },
         ];
     }
 }
