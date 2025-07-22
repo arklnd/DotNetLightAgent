@@ -81,6 +81,7 @@ OllamaPromptExecutionSettings ollamaPromptExecutionSettings = new()
     Temperature = 0.6f,
     TopP = (float?)0.95,
     TopK = 40,
+    // MaxToken = 4096, //No such property exists
 };
 // Create a history store the conversation
 var history = new ChatHistory();
