@@ -9,12 +9,24 @@ using Microsoft.SemanticKernel.Connectors.Ollama;
 using DotNetLightAgent.Models;
 
 // Populate values for your Ollama deployment
-var modelId = "qwen3"; // or any other model you have installed in Ollama
-var endpoint = new Uri("http://172.30.245.214:11434"); // default Ollama endpoint
+var modelId = "qwen2.5-1.5b-instruct-cuda-gpu"; // or any other model you have installed in Ollama
+var endpoint = new Uri("http://127.0.0.1:63468/v1/"); // default Ollama endpoint
 
 // Create a kernel with Ollama chat completion
 var kernelBuilder = Kernel.CreateBuilder();
-kernelBuilder.AddOllamaChatCompletion(modelId, endpoint);
+// Add timeout configuration and better error handling
+var httpClient = new HttpClient()
+{
+    Timeout = TimeSpan.FromMinutes(5) // Increase timeout
+};
+
+// Try OpenAI connector with custom HttpClient
+kernelBuilder.AddOpenAIChatCompletion(
+    modelId: modelId, 
+    endpoint: endpoint, 
+    apiKey: "placeholder", // Some services still require a placeholder
+    httpClient: httpClient
+);
 
 // Add enterprise components
 kernelBuilder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Information));
@@ -115,7 +127,7 @@ do
         string fullResponse = "";
         await foreach (var chunk in chatCompletionService.GetStreamingChatMessageContentsAsync(
             history,
-            executionSettings: ollamaPromptExecutionSettings,
+            executionSettings: promptExecutionSettings,
             kernel: kernel))
         {
             Console.Write(chunk.Content); // Stream response as it arrives
