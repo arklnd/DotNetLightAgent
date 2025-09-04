@@ -6,28 +6,23 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using DotNetLightAgent.Plugins;
 using ModelContextProtocol.Client;
 using Microsoft.SemanticKernel.Connectors.Ollama;
+using Microsoft.SemanticKernel.Connectors.AzureAIInference;
 using DotNetLightAgent.Models;
+using Azure;
 
 // Populate values for your Ollama deployment
-var modelId = "qwen2.5-1.5b-instruct-cuda-gpu"; // or any other model you have installed in Ollama
-var endpoint = new Uri("http://127.0.0.1:63468/v1/"); // default Ollama endpoint
+var modelId = "mistral-ai/mistral-medium-2505"; // or any other model you have installed in Ollama
+var endpoint = new Uri("https://models.github.ai/inference");
+var apiKey = Environment.GetEnvironmentVariable("GITHUB_TOKEN") ?? throw new InvalidOperationException("Please set the GITHUB_TOKEN environment variable.");
 
 // Create a kernel with Ollama chat completion
 var kernelBuilder = Kernel.CreateBuilder();
-// Add timeout configuration and better error handling
-var httpClient = new HttpClient()
-{
-    Timeout = TimeSpan.FromMinutes(5) // Increase timeout
-};
-
-// Try OpenAI connector with custom HttpClient
-kernelBuilder.AddOpenAIChatCompletion(
-    modelId: modelId, 
-    endpoint: endpoint, 
-    apiKey: "placeholder", // Some services still require a placeholder
-    httpClient: httpClient
+kernelBuilder.AddAzureAIInferenceChatCompletion(
+    modelId: modelId,
+    endpoint: endpoint,
+    apiKey: apiKey // or credential, depending on exact Semantic Kernel API version
+    // serviceId: "optional-custom-id" // If you want to distinguish between services
 );
-
 // Add enterprise components
 kernelBuilder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Information));
 
@@ -92,13 +87,13 @@ OllamaPromptExecutionSettings ollamaPromptExecutionSettings = new()
     FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
     Temperature = 0.6f,
     TopP = (float?)0.95,
-    TopK = 40,
+    // TopK = 40,
     // MaxToken = 4096, //No such property exists
-    ExtensionData = new Dictionary<string, object>
-    {
-        { "num_predict", 512 },
-        { "num_ctx", 4096 }
-    }
+    // ExtensionData = new Dictionary<string, object>
+    // {
+    //     { "num_predict", 512 },
+    //     { "num_ctx", 4096 }
+    // }
 };
 // Create a history store the conversation
 var history = new ChatHistory();
@@ -127,7 +122,7 @@ do
         string fullResponse = "";
         await foreach (var chunk in chatCompletionService.GetStreamingChatMessageContentsAsync(
             history,
-            executionSettings: promptExecutionSettings,
+            executionSettings: ollamaPromptExecutionSettings,
             kernel: kernel))
         {
             Console.Write(chunk.Content); // Stream response as it arrives

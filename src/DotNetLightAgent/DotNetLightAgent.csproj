@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.7" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.60.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureAIInference" Version="1.64.0-beta" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.60.0-alpha" />
     <PackageReference Include="ModelContextProtocol.Core" Version="0.3.0-preview.3" />
   </ItemGroup>
