@@ -11,7 +11,7 @@ using DotNetLightAgent.Models;
 using Azure;
 
 // Populate values for your Ollama deployment
-var modelId = "mistral-ai/mistral-medium-2505"; // or any other model you have installed in Ollama
+var modelId = "openai/gpt-5"; // or any other model you have installed in Ollama
 var endpoint = new Uri("https://models.github.ai/inference");
 var apiKey = Environment.GetEnvironmentVariable("GITHUB_TOKEN") ?? throw new InvalidOperationException("Please set the GITHUB_TOKEN environment variable.");
 
@@ -85,8 +85,8 @@ PromptExecutionSettings promptExecutionSettings = new()
 OllamaPromptExecutionSettings ollamaPromptExecutionSettings = new()
 {
     FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
-    Temperature = 0.6f,
-    TopP = (float?)0.95,
+    // Temperature = 0.6f,
+    // TopP = (float?)0.95,
     // TopK = 40,
     // MaxToken = 4096, //No such property exists
     // ExtensionData = new Dictionary<string, object>
