@@ -166,12 +166,14 @@ do
                     // Regular assistant response
                     Console.Write(chunk.Content);
                     fullResponse += chunk.Content;
+                    history.AddMessage(AuthorRole.Assistant, chunk.Content ?? "");
                 }
                 else if (!string.IsNullOrEmpty(chunk.Content))
                 {
                     // Fallback for any other content
                     Console.Write(chunk.Content);
                     fullResponse += chunk.Content;
+                    history.AddMessage(AuthorRole.Assistant, chunk.Content ?? "");
                 }
             }
             Console.WriteLine(); // Add newline after streaming is complete
@@ -219,15 +221,7 @@ static void DisplayConversationHistory(ChatHistory history)
         Console.ForegroundColor = roleColor;
         Console.Write($"{i + 1}. [{roleIcon} {message.Role}] ");
         Console.ResetColor();
-        
-        // Truncate long messages for history display
-        var content = message.Content ?? "";
-        if (content.Length > 100)
-        {
-            content = content.Substring(0, 97) + "...";
-        }
-        
-        Console.WriteLine(content);
+        Console.WriteLine(message.Content);
     }
     
     Console.WriteLine($"\nTotal messages: {history.Count}");
