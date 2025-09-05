@@ -11,16 +11,18 @@ using DotNetLightAgent.Models;
 using Azure;
 
 // Populate values for your Ollama deployment
-var modelId = "openai/gpt-5-chat"; // or any other model you have installed in Ollama
-var endpoint = new Uri("https://models.github.ai/inference");
-var apiKey = Environment.GetEnvironmentVariable("GITHUB_TOKEN") ?? throw new InvalidOperationException("Please set the GITHUB_TOKEN environment variable.");
+var modelId = "gpt-35-turbo"; // or any other model you have installed in Ollama
+var endpoint = new Uri("https://openai-hra-us.openai.azure.com/");
+var apiKey = Environment.GetEnvironmentVariable("AZURE_KEY1") ?? throw new InvalidOperationException("Please set the AZURE_KEY1 environment variable.");
+var deploymentName = "gpt-35-turbo"; // Your Azure OpenAI deployment name
 
 // Create a kernel with Ollama chat completion
 var kernelBuilder = Kernel.CreateBuilder();
-kernelBuilder.AddAzureAIInferenceChatCompletion(
+kernelBuilder.AddAzureOpenAIChatCompletion(
     modelId: modelId,
-    endpoint: endpoint,
-    apiKey: apiKey // or credential, depending on exact Semantic Kernel API version
+    endpoint: endpoint.ToString(),
+    apiKey: apiKey, // or credential, depending on exact Semantic Kernel API version
+    deploymentName: deploymentName
     // serviceId: "optional-custom-id" // If you want to distinguish between services
 );
 // Add enterprise components
@@ -97,6 +99,8 @@ OllamaPromptExecutionSettings ollamaPromptExecutionSettings = new()
 };
 // Create a history store the conversation
 var history = new ChatHistory();
+history.AddMessage(AuthorRole.System, @"You are a helpful AI assistant named Jira-Sic with access to various tools and capabilities including:
+- Ability to call functions and perform actions based on user requests");
 
 // Initiate a back-and-forth chat
 string? userInput;
@@ -118,8 +122,14 @@ do
         
         // Reset history but keep system message
         history.Clear();
-        history.AddMessage(AuthorRole.System, @"You are a helpful AI assistant with access to various tools and capabilities including:
+        history.AddMessage(AuthorRole.System, @"You are a helpful AI assistant named Jira-Sic with access to various tools and capabilities including:
 - Ability to call functions and perform actions based on user requests");
+        continue;
+    }
+
+    if (string.Equals(userInput?.Trim(), "/history", StringComparison.OrdinalIgnoreCase))
+    {
+        DisplayConversationHistory(history);
         continue;
     }
 
@@ -183,4 +193,71 @@ do
 if (mcpClient != null)
 {
     await mcpClient.DisposeAsync();
+}
+
+// Helper method to display conversation history with role visualization
+static void DisplayConversationHistory(ChatHistory history)
+{
+    Console.ForegroundColor = ConsoleColor.Cyan;
+    Console.WriteLine("\n📚 Conversation History:");
+    Console.WriteLine("════════════════════════");
+    Console.ResetColor();
+    
+    if (history.Count == 0)
+    {
+        Console.WriteLine("No messages in history yet.");
+        Console.WriteLine();
+        return;
+    }
+    
+    for (int i = 0; i < history.Count; i++)
+    {
+        var message = history[i];
+        var roleIcon = GetRoleIcon(message.Role);
+        var roleColor = GetRoleColor(message.Role);
+        
+        Console.ForegroundColor = roleColor;
+        Console.Write($"{i + 1}. [{roleIcon} {message.Role}] ");
+        Console.ResetColor();
+        
+        // Truncate long messages for history display
+        var content = message.Content ?? "";
+        if (content.Length > 100)
+        {
+            content = content.Substring(0, 97) + "...";
+        }
+        
+        Console.WriteLine(content);
+    }
+    
+    Console.WriteLine($"\nTotal messages: {history.Count}");
+    Console.WriteLine();
+}
+
+// Helper method to get role-specific icons
+static string GetRoleIcon(AuthorRole role)
+{
+    return role.Label.ToLowerInvariant() switch
+    {
+        "system" => "⚙️",
+        "user" => "👤",
+        "assistant" => "🤖",
+        "tool" => "🔧",
+        "developer" => "👨‍💻",
+        _ => "❓"
+    };
+}
+
+// Helper method to get role-specific colors
+static ConsoleColor GetRoleColor(AuthorRole role)
+{
+    return role.Label.ToLowerInvariant() switch
+    {
+        "system" => ConsoleColor.DarkCyan,
+        "user" => ConsoleColor.Green,
+        "assistant" => ConsoleColor.Blue,
+        "tool" => ConsoleColor.Magenta,
+        "developer" => ConsoleColor.DarkYellow,
+        _ => ConsoleColor.Gray
+    };
 }
