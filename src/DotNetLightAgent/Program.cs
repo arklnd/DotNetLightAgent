@@ -11,7 +11,7 @@ using DotNetLightAgent.Models;
 using Azure;
 
 // Populate values for your Ollama deployment
-var modelId = "openai/gpt-5"; // or any other model you have installed in Ollama
+var modelId = "openai/gpt-5-chat"; // or any other model you have installed in Ollama
 var endpoint = new Uri("https://models.github.ai/inference");
 var apiKey = Environment.GetEnvironmentVariable("GITHUB_TOKEN") ?? throw new InvalidOperationException("Please set the GITHUB_TOKEN environment variable.");
 
@@ -31,7 +31,7 @@ Kernel kernel = kernelBuilder.Build();
 var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 
 // Add a plugin (the LightsPlugin class is defined below)
-kernel.Plugins.AddFromType<LightsPlugin>("Lights");
+// kernel.Plugins.AddFromType<LightsPlugin>("Lights");
 
 IMcpClient? mcpClient = null;
 // Stdio based MCP with error handling
@@ -108,6 +108,21 @@ do
     Console.ResetColor();
     userInput = Console.ReadLine();
 
+    // Clear chat history
+    if (string.Equals(userInput?.Trim(), "/clear", StringComparison.OrdinalIgnoreCase))
+    {
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("🧹 Chat history cleared. Starting fresh conversation...\n");
+        Console.ResetColor();
+        
+        // Reset history but keep system message
+        history.Clear();
+        history.AddMessage(AuthorRole.System, @"You are a helpful AI assistant with access to various tools and capabilities including:
+- Ability to call functions and perform actions based on user requests");
+        continue;
+    }
+
     // Add user input
     if (!string.IsNullOrWhiteSpace(userInput))
     {
@@ -118,20 +133,49 @@ do
         Console.Write("[🤖] > ");
         Console.ResetColor();
 
-        // Get the streaming response from the AI
-        string fullResponse = "";
-        await foreach (var chunk in chatCompletionService.GetStreamingChatMessageContentsAsync(
-            history,
-            executionSettings: ollamaPromptExecutionSettings,
-            kernel: kernel))
+        try
         {
-            Console.Write(chunk.Content); // Stream response as it arrives
-            fullResponse += chunk.Content;
-        }
-        Console.WriteLine(); // Add newline after streaming is complete
+            // Get the streaming response from the AI
+            string fullResponse = "";
+            await foreach (var chunk in chatCompletionService.GetStreamingChatMessageContentsAsync(
+                history,
+                executionSettings: ollamaPromptExecutionSettings,
+                kernel: kernel))
+            {
+                if (chunk.Role == AuthorRole.Tool)
+                {
+                    // This is a tool response
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.Write("[🔧] ");
+                    Console.ResetColor();
+                    Console.WriteLine(chunk.Content);
+                    history.AddMessage(AuthorRole.Tool, chunk.Content ?? "");
+                }
+                else if (chunk.Role == AuthorRole.Assistant && !string.IsNullOrEmpty(chunk.Content))
+                {
+                    // Regular assistant response
+                    Console.Write(chunk.Content);
+                    fullResponse += chunk.Content;
+                }
+                else if (!string.IsNullOrEmpty(chunk.Content))
+                {
+                    // Fallback for any other content
+                    Console.Write(chunk.Content);
+                    fullResponse += chunk.Content;
+                }
+            }
+            Console.WriteLine(); // Add newline after streaming is complete
 
-        // Add the complete message from the agent to the chat history
-        history.AddAssistantMessage(fullResponse);
+        }
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"❌ Error during AI interaction: {ex.Message}");
+            Console.ResetColor();
+            
+            // Add error information to history as a system message for context
+            history.AddMessage(AuthorRole.Developer, $"Error occurred during interaction: {ex.Message}");
+        }
     }
 } while (userInput is not null);
 
