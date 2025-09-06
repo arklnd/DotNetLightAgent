@@ -11,20 +11,26 @@ using DotNetLightAgent.Models;
 using Azure;
 
 // Populate values for your Ollama deployment
-var modelId = "copilot-claude-sonnet-4"; // or any other model you have installed in Ollama
-var endpoint = new Uri("http://localhost:3000/v1"); // Ollama endpoint
-var apiKey = Environment.GetEnvironmentVariable("GITHUB_TOKEN") ?? throw new InvalidOperationException("Please set the GITHUB_TOKEN environment variable.");
+var modelId = "copilot-gpt-5"; // or any other model you have installed in Ollama
+var endpoint = new Uri("http://localhost:3000/v1/"); // default Ollama endpoint
 
 // Create a kernel with Ollama chat completion
 var kernelBuilder = Kernel.CreateBuilder();
-kernelBuilder.AddAzureAIInferenceChatCompletion(
-    modelId: modelId,
-    endpoint: endpoint,
-    apiKey: apiKey // or credential, depending on exact Semantic Kernel API version
-    // serviceId: "optional-custom-id" // If you want to distinguish between services
+// Add timeout configuration and better error handling
+var httpClient = new HttpClient()
+{
+    Timeout = TimeSpan.FromMinutes(5) // Increase timeout
+};
+
+// Try OpenAI connector with custom HttpClient
+kernelBuilder.AddOpenAIChatCompletion(
+    modelId: modelId, 
+    endpoint: endpoint, 
+    apiKey: "placeholder" // Some services still require a placeholder
+    // httpClient: httpClient
 );
 // Add enterprise components
-kernelBuilder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.None));
+kernelBuilder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Information));
 
 // Build the kernel
 Kernel kernel = kernelBuilder.Build();
