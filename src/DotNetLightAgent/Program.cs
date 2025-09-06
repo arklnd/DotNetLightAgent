@@ -11,29 +11,27 @@ using DotNetLightAgent.Models;
 using Azure;
 
 // Populate values for your Ollama deployment
-var modelId = "gpt-35-turbo"; // or any other model you have installed in Ollama
-var endpoint = new Uri("https://openai-hra-us.openai.azure.com/");
-var apiKey = Environment.GetEnvironmentVariable("AZURE_KEY1") ?? throw new InvalidOperationException("Please set the AZURE_KEY1 environment variable.");
-var deploymentName = "gpt-35-turbo"; // Your Azure OpenAI deployment name
+var modelId = "copilot-claude-sonnet-4"; // or any other model you have installed in Ollama
+var endpoint = new Uri("http://localhost:3000/v1"); // Ollama endpoint
+var apiKey = Environment.GetEnvironmentVariable("GITHUB_TOKEN") ?? throw new InvalidOperationException("Please set the GITHUB_TOKEN environment variable.");
 
 // Create a kernel with Ollama chat completion
 var kernelBuilder = Kernel.CreateBuilder();
-kernelBuilder.AddAzureOpenAIChatCompletion(
+kernelBuilder.AddAzureAIInferenceChatCompletion(
     modelId: modelId,
-    endpoint: endpoint.ToString(),
-    apiKey: apiKey, // or credential, depending on exact Semantic Kernel API version
-    deploymentName: deploymentName
+    endpoint: endpoint,
+    apiKey: apiKey // or credential, depending on exact Semantic Kernel API version
     // serviceId: "optional-custom-id" // If you want to distinguish between services
 );
 // Add enterprise components
-kernelBuilder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Information));
+kernelBuilder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.None));
 
 // Build the kernel
 Kernel kernel = kernelBuilder.Build();
 var chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
 
 // Add a plugin (the LightsPlugin class is defined below)
-// kernel.Plugins.AddFromType<LightsPlugin>("Lights");
+kernel.Plugins.AddFromType<LightsPlugin>("Lights");
 
 IMcpClient? mcpClient = null;
 // Stdio based MCP with error handling
