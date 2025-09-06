@@ -95,11 +95,11 @@ OllamaPromptExecutionSettings ollamaPromptExecutionSettings = new()
     // TopP = (float?)0.95,
     // TopK = 40,
     // MaxToken = 4096, //No such property exists
-    // ExtensionData = new Dictionary<string, object>
-    // {
-    //     { "num_predict", 512 },
-    //     { "num_ctx", 4096 }
-    // }
+    ExtensionData = new Dictionary<string, object>
+    {
+        { "num_predict", 512 },
+        { "num_ctx", 4096 }
+    }
 };
 // Create a history store the conversation
 var history = new ChatHistory();
