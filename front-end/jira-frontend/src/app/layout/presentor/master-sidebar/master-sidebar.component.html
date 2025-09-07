@@ -1,9 +1,12 @@
 <div class="master-sidebar-container">
   <app-loader [show]="loading"></app-loader>
   <div *ngIf="!loading && projects.length > 0" class="project-list">
-    <div class="project-list-title">Jira Projects</div>
+    <mat-form-field appearance="outline" class="project-search-field">
+      <mat-label>Search Projects</mat-label>
+      <input matInput [(ngModel)]="searchTerm" placeholder="Type to filter...">
+    </mat-form-field>
     <div class="project-card-list">
-      <button *ngFor="let project of projects" class="project-card-btn" mat-raised-button>
+      <button *ngFor="let project of filteredProjects()" class="project-card-btn" mat-raised-button>
         {{ project.name }}
       </button>
     </div>

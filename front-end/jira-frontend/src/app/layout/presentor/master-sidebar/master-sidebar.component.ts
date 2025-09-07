@@ -10,6 +10,7 @@ import { JiraApiService } from '../../../services/jira-api.service';
 export class MasterSidebarComponent implements OnInit {
   loading = false;
   projects: any[] = [];
+  searchTerm = '';
 
   constructor(private jiraApi: JiraApiService) {}
 
@@ -21,17 +22,20 @@ export class MasterSidebarComponent implements OnInit {
     this.loading = true;
     this.jiraApi.getAllProjects().subscribe({
       next: (result) => {
-        // Place breakpoint here for success
         console.log('Projects response:', result);
         this.projects = Array.isArray(result) ? result : [];
         this.loading = false;
       },
       error: (err) => {
-        // Place breakpoint here for error
         console.error('Projects error:', err);
         this.projects = [];
         this.loading = false;
       }
     });
+  }
+
+  filteredProjects() {
+    if (!this.searchTerm) return this.projects;
+    return this.projects.filter(p => p.name?.toLowerCase().includes(this.searchTerm.toLowerCase()));
   }
 }
