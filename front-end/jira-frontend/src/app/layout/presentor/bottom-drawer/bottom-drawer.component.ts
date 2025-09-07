@@ -17,7 +17,12 @@ export class BottomDrawerComponent {
 
   showStepsAlert() {
     if (this.steps) {
-      alert(this.steps);
+      // Split steps into lines, remove leading # and whitespace, and format
+      const lines = this.steps.split(/\r?\n/)
+        .map(line => line.replace(/^\s*#\s*/, '').trim())
+        .filter(line => line.length > 0);
+      const formatted = lines.map((line, idx) => `Instruction step ${idx + 1}: ${line}`).join('\n');
+      alert(formatted);
     }
   }
 }
