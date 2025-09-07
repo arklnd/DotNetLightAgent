@@ -30,38 +30,61 @@ namespace JiraAutomateServer.Controllers
             return Ok("Authenticated");
         }
 
+
         [HttpGet("issues")]
-        public async Task<IEnumerable<JiraIssueDto>> GetIssues([FromQuery] string jql)
+        public async Task<ActionResult<IEnumerable<JiraIssueDto>>> GetIssues([FromQuery] string jql)
         {
-            // Use REST API for reliability
             var url = _config["Jira:Url"];
             var username = _config["Jira:Username"];
             var apiToken = _config["Jira:ApiToken"];
-            return await _jiraService.GetIssuesViaRestApiAsync(jql, url, username, apiToken);
+            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(apiToken))
+                return BadRequest("Jira configuration is missing.");
+            var issues = await _jiraService.GetIssuesViaRestApiAsync(jql, url, username, apiToken);
+            return Ok(issues);
         }
+
 
         [HttpGet("issue/{key}")]
-        public async Task<JiraIssueDto?> GetIssueByKey(string key)
+        public async Task<ActionResult<JiraIssueDto?>> GetIssueByKey(string key)
         {
-            var issue = await _jiraService.GetIssueByKeyAsync(key);
-            if (issue == null) return null;
-            return new JiraIssueDto
-            {
-                Key = issue.Key?.Value,
-                Summary = issue.Summary,
-                Status = issue.Status?.Name,
-                Assignee = issue.Assignee,
-                Created = issue.Created,
-                Updated = issue.Updated
-            };
+            var url = _config["Jira:Url"];
+            var username = _config["Jira:Username"];
+            var apiToken = _config["Jira:ApiToken"];
+            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(apiToken))
+                return BadRequest("Jira configuration is missing.");
+            var issue = await _jiraService.GetIssueByKeyViaRestApiAsync(key, url, username, apiToken);
+            if (issue == null) return NotFound();
+            return Ok(issue);
         }
 
+
         [HttpGet("issue/{key}/steps")]
-        public async Task<string?> GetStepsToReproduce(string key)
+        public async Task<ActionResult<string?>> GetStepsToReproduce(string key)
         {
-            var issue = await _jiraService.GetIssueByKeyAsync(key);
-            if (issue == null) return null;
-            return _jiraService.GetStepsToReproduce(issue);
+            var url = _config["Jira:Url"];
+            var username = _config["Jira:Username"];
+            var apiToken = _config["Jira:ApiToken"];
+            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(apiToken))
+                return BadRequest("Jira configuration is missing.");
+            var issue = await _jiraService.GetIssueByKeyViaRestApiAsync(key, url, username, apiToken);
+            if (issue == null) return NotFound();
+            // Try to get steps from a custom field or from the description
+            string? steps = null;
+            if (issue.RawFields != null && issue.RawFields.TryGetValue("Steps to Reproduce", out var stepsObj))
+            {
+                steps = stepsObj?.ToString();
+            }
+            if (string.IsNullOrWhiteSpace(steps) && !string.IsNullOrWhiteSpace(issue.Description))
+            {
+                var desc = issue.Description;
+                var marker = "Steps to Reproduce";
+                var idx = desc.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+                if (idx >= 0)
+                {
+                    steps = desc.Substring(idx + marker.Length).Trim();
+                }
+            }
+            return Ok(steps);
         }
 
         [HttpGet("projects")]
