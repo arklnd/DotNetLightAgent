@@ -68,11 +68,20 @@ namespace JiraAutomateServer.Controllers
                 return BadRequest("Jira configuration is missing.");
             var issue = await _jiraService.GetIssueByKeyViaRestApiAsync(key, url, username, apiToken);
             if (issue == null) return NotFound();
-            // Try to get steps from a custom field or from the description
+            // Try to find steps in any custom field (key or value contains 'steps')
             string? steps = null;
-            if (issue.RawFields != null && issue.RawFields.TryGetValue("Steps to Reproduce", out var stepsObj))
+            if (issue.RawFields != null)
             {
-                steps = stepsObj?.ToString();
+                foreach (var kvp in issue.RawFields)
+                {
+                    var keyLower = kvp.Key.ToLowerInvariant();
+                    var valueStr = kvp.Value?.ToString() ?? string.Empty;
+                    if ((keyLower.Contains("steps") || valueStr.ToLowerInvariant().Contains("steps to reproduce")) && !string.IsNullOrWhiteSpace(valueStr))
+                    {
+                        steps = valueStr;
+                        break;
+                    }
+                }
             }
             if (string.IsNullOrWhiteSpace(steps) && !string.IsNullOrWhiteSpace(issue.Description))
             {
