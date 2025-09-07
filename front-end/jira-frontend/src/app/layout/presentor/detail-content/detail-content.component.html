@@ -20,7 +20,13 @@
           <div class="bug-card-summary">{{ bug.fields?.summary || bug.summary }}</div>
         </div>
       </div>
-      <app-bottom-drawer *ngIf="drawerOpen" [issueKey]="selectedIssueKey" (closeDrawer)="closeDrawer()"></app-bottom-drawer>
+      <app-bottom-drawer
+        *ngIf="drawerOpen"
+        [issueKey]="selectedIssueKey"
+        [steps]="stepsToReproduce"
+        [loading]="stepsLoading"
+        (closeDrawer)="closeDrawer()"
+      ></app-bottom-drawer>
     </ng-container>
     <ng-template #noBugs>
       <div class="no-bugs">Please choose a Jira project from the left sidebar.</div>

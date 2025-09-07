@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { BugListService } from '../../../services/bug-list.service';
+import { JiraApiService } from '../../../services/jira-api.service';
 
 @Component({
   selector: 'app-detail-content',
@@ -12,6 +13,8 @@ export class DetailContentComponent implements OnInit {
   bugSearchTerm: string = '';
   drawerOpen = false;
   selectedIssueKey: string | null = null;
+  stepsToReproduce: string | null = null;
+  stepsLoading = false;
 
   get filteredBugs() {
     if (!this.bugs || !this.bugSearchTerm?.trim()) return this.bugs;
@@ -22,7 +25,7 @@ export class DetailContentComponent implements OnInit {
     );
   }
 
-  constructor(private bugListService: BugListService) {}
+  constructor(private bugListService: BugListService, private jiraApi: JiraApiService) {}
 
   ngOnInit(): void {
     this.bugListService.bugList$.subscribe((bugs: any[]) => {
@@ -33,10 +36,24 @@ export class DetailContentComponent implements OnInit {
   openDrawer(issueKey: string) {
     this.selectedIssueKey = issueKey;
     this.drawerOpen = true;
+    this.stepsToReproduce = null;
+    this.stepsLoading = true;
+    this.jiraApi.getStepsToReproduce(issueKey).subscribe({
+      next: (steps: string) => {
+        this.stepsToReproduce = steps;
+        this.stepsLoading = false;
+      },
+      error: () => {
+        this.stepsToReproduce = 'Could not fetch steps to reproduce.';
+        this.stepsLoading = false;
+      }
+    });
   }
 
   closeDrawer() {
     this.drawerOpen = false;
     this.selectedIssueKey = null;
+    this.stepsToReproduce = null;
+    this.stepsLoading = false;
   }
 }

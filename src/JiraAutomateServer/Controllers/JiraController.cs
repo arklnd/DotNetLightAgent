@@ -68,9 +68,14 @@ namespace JiraAutomateServer.Controllers
                 return BadRequest("Jira configuration is missing.");
             var issue = await _jiraService.GetIssueByKeyViaRestApiAsync(key, url, username, apiToken);
             if (issue == null) return NotFound();
-            // Try to find steps in any custom field (key or value contains 'steps')
+            // Prefer customfield_10830 for steps to reproduce
             string? steps = null;
-            if (issue.RawFields != null)
+            if (issue.RawFields != null && issue.RawFields.TryGetValue("customfield_10830", out var stepsField))
+            {
+                steps = stepsField?.ToString();
+            }
+            // Fallback: Try to find steps in any custom field (key or value contains 'steps')
+            if (string.IsNullOrWhiteSpace(steps) && issue.RawFields != null)
             {
                 foreach (var kvp in issue.RawFields)
                 {
@@ -83,6 +88,7 @@ namespace JiraAutomateServer.Controllers
                     }
                 }
             }
+            // Fallback: Try to extract from description
             if (string.IsNullOrWhiteSpace(steps) && !string.IsNullOrWhiteSpace(issue.Description))
             {
                 var desc = issue.Description;

@@ -7,8 +7,29 @@
       </button>
     </div>
     <div class="drawer-body">
-      <!-- Placeholder for future details -->
-      <span>Drawer content for <b>{{ issueKey }}</b> goes here.</span>
+      <ng-container *ngIf="loading">
+        <div class="drawer-loader">
+          <mat-spinner diameter="32"></mat-spinner>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="!loading">
+  <div class="steps-title">Steps to Reproduce</div>
+        <div class="steps-content" *ngIf="steps; else noSteps">
+          <pre class="steps-pre">{{ steps }}</pre>
+        </div>
+        <ng-template #noSteps>
+          <div class="steps-empty">No steps found for this issue.</div>
+        </ng-template>
+        <button
+          mat-flat-button
+          color="primary"
+          class="auto-repro-btn"
+          (click)="showStepsAlert()"
+          *ngIf="steps"
+        >
+          Auto Reproduce
+        </button>
+      </ng-container>
     </div>
   </div>
 </div>

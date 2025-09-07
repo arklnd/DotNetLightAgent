@@ -38,4 +38,51 @@
 .drawer-body {
   font-size: 1rem;
   color: #333;
+  padding-top: 8px;
+}
+
+.drawer-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+.steps-title {
+  font-size: 1.08rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1e62d0;
+}
+.auto-repro-btn {
+  margin-top: 18px;
+  width: 100%;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(30,98,208,0.08);
+  padding: 12px 0;
+}
+.steps-content {
+  background: #f5f8ff;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 0.98rem;
+  color: #222;
+  box-shadow: 0 1px 4px rgba(30,98,208,0.04);
+  margin-bottom: 8px;
+  white-space: pre-wrap;
+}
+.steps-pre {
+  margin: 0;
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.98rem;
+  background: none;
+  border: none;
+  white-space: pre-wrap;
+}
+.steps-empty {
+  color: #888;
+  font-style: italic;
+  margin-top: 12px;
 }

@@ -7,9 +7,17 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 })
 export class BottomDrawerComponent {
   @Input() issueKey: string | null = null;
+  @Input() steps: string | null = null;
+  @Input() loading: boolean = false;
   @Output() closeDrawer = new EventEmitter<void>();
 
   close() {
     this.closeDrawer.emit();
+  }
+
+  showStepsAlert() {
+    if (this.steps) {
+      alert(this.steps);
+    }
   }
 }
