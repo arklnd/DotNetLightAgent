@@ -27,7 +27,7 @@ namespace JiraAutomateServer.Controllers
             var username = string.IsNullOrWhiteSpace(request.Username) ? _config["Jira:Username"] : request.Username;
             var apiToken = string.IsNullOrWhiteSpace(request.ApiToken) ? _config["Jira:ApiToken"] : request.ApiToken;
             _jiraService.Authenticate(url, username, apiToken);
-            return Ok("Authenticated");
+            return Ok(new { status = "Authenticated" });
         }
 
 
@@ -96,11 +96,24 @@ namespace JiraAutomateServer.Controllers
             return Ok(steps);
         }
 
-        [HttpGet("projects")]
-        public async Task<ActionResult<IEnumerable<JiraProjectDto>>> GetAllProjects()
+        [HttpPost("projects")]
+        public async Task<ActionResult<IEnumerable<JiraProjectDto>>> GetAllProjects([FromBody] JiraAuthRequest request)
         {
+            // Log headers
+            Console.WriteLine("--- Incoming /api/jira/projects Request ---");
+            foreach (var header in Request.Headers)
+            {
+                Console.WriteLine($"Header: {header.Key} = {header.Value}");
+            }
+            // Log body
+            Console.WriteLine($"Body: Url={request.Url}, Username={request.Username}, ApiToken={(string.IsNullOrEmpty(request.ApiToken) ? "<empty>" : "<provided>")}");
             try
             {
+                // Use config defaults if not provided in request
+                var url = string.IsNullOrWhiteSpace(request.Url) ? _config["Jira:Url"] : request.Url;
+                var username = string.IsNullOrWhiteSpace(request.Username) ? _config["Jira:Username"] : request.Username;
+                var apiToken = string.IsNullOrWhiteSpace(request.ApiToken) ? _config["Jira:ApiToken"] : request.ApiToken;
+                _jiraService.Authenticate(url, username, apiToken);
                 var projects = await _jiraService.GetAllProjectsAsync();
                 return Ok(projects);
             }

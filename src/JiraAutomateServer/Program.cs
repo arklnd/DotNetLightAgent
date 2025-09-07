@@ -1,9 +1,27 @@
 
+
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Add CORS policy to allow Angular frontend and support credentials
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy
+            .WithOrigins("http://localhost:4200") // Update if your Angular port is different
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+    );
+});
+
+
 var app = builder.Build();
+
+// Use CORS before controllers
+app.UseCors("AllowFrontend");
+
 app.UseHttpsRedirection();
 // Map controllers (this exposes JiraController and any other controllers)
 app.MapControllers();

@@ -11,4 +11,9 @@
     <ProjectReference Include="..\JiraIntegration\JiraIntegration.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.3.0" />
+  </ItemGroup>
+
 </Project>

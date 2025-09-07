@@ -1,0 +1,69 @@
+@import '../../../styles/tokens';
+
+// Responsive, centered header to match app root
+// Match the main toolbar's width, color, and icon size
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80vw;
+  min-width: 320px;
+  margin: 0 auto;
+  padding: 0.75rem 2rem 0.75rem 1.5rem;
+  background: #1976d2;
+  color: #fff;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 4px 24px 0 rgba(60,60,60,0.18), 0 1.5px 6px 0 rgba(60,60,60,0.10);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  position: static;
+  z-index: 200;
+
+  .app-title {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+    margin-right: 1rem;
+  }
+
+  .header-right button[mat-icon-button] .mat-icon {
+    font-size: 24px;
+    color: #fff;
+  }
+// removed extra closing brace
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    .logo {
+      width: 75px;
+      height: 75px;
+      margin-right: 1rem;
+    }
+    .app-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    button[mat-icon-button] {
+      margin-left: 0.5rem;
+    }
+    mat-icon {
+      font-size: 2rem;
+      color: $primary-color;
+    }
+  }
+}

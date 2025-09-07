@@ -20,8 +20,15 @@ Accept: application/json
 GET http://localhost:5212/api/jira/issue/OBAPPS-2326/steps
 Accept: application/json
 
+
 ### Get all Jira projects
-GET http://localhost:5212/api/jira/projects
-Accept: application/json
+POST http://localhost:5212/api/jira/projects
+Content-Type: application/json
+
+{
+  "Url": "",
+  "Username": "",
+  "ApiToken": ""
+}
 
 # Replace {{issueKey}} with the actual Jira issue key, e.g., OBAPPS-123

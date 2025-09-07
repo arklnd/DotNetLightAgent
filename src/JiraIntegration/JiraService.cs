@@ -113,7 +113,5 @@ namespace JiraIntegration
 
             return projects ?? new List<JiraProjectDto>();
         }
-
-        // ...existing SDK-based methods (optional, can be removed if not needed)...
     }
 }

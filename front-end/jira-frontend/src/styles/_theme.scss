@@ -1,0 +1,9 @@
+// Theme definitions (light/dark)
+$theme-light: (
+  background: $background-light,
+  text: $text-color
+);
+$theme-dark: (
+  background: $background-dark,
+  text: $text-color-dark
+);

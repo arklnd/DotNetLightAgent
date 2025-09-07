@@ -29,6 +29,7 @@ kernelBuilder.AddOpenAIChatCompletion(
     apiKey: "placeholder" // Some services still require a placeholder
     // httpClient: httpClient
 );
+// ...existing code...
 // Add enterprise components
 kernelBuilder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Information));
 
@@ -45,7 +46,6 @@ foreach (var stdmcp in MCPList.stdioClientTransportOptions)
 {
     try
     {
-        Console.Write($"[⚪] Attempting to connect to MCP: <{stdmcp.Name}> ..");
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         mcpClient = await McpClientFactory.CreateAsync(
             new StdioClientTransport(stdmcp),
@@ -55,7 +55,6 @@ foreach (var stdmcp in MCPList.stdioClientTransportOptions)
         );
 
         // Retrieve available tools and expose as SK functions
-        // IList<McpClientTool> tools = await mcpClient.ListToolsAsync();
         var tools = await mcpClient.ListToolsAsync();
         kernel.Plugins.AddFromFunctions(stdmcp.Name, tools.Select(aiFunction => aiFunction.AsKernelFunction()));
         Console.WriteLine($"\r[🟢] Successfully connected to <{stdmcp.Name}> with {tools.Count} tools available.");
