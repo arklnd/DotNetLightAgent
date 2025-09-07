@@ -1,7 +1,7 @@
 <div class="master-sidebar-container">
   <app-loader [show]="loading"></app-loader>
   <div *ngIf="!loading && projects.length > 0" class="project-list">
-    <mat-form-field appearance="outline" class="project-search-field">
+  <mat-form-field class="project-search-field">
       <mat-label>Search Projects</mat-label>
       <input matInput [(ngModel)]="searchTerm" placeholder="Type to filter...">
     </mat-form-field>

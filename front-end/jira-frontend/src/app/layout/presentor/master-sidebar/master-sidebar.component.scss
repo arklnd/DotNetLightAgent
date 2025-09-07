@@ -1,3 +1,25 @@
+/* Strongest override for Angular Material search field backgrounds */
+::ng-deep .project-search-field .mat-mdc-form-field-focus-overlay {
+  background-color: #fff !important;
+}
+::ng-deep .project-search-field .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: #fff !important;
+}
+/* High-specificity overrides for Angular Material search field backgrounds */
+.project-search-field .mat-mdc-form-field-focus-overlay {
+  background-color: #fff !important;
+}
+.project-search-field .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: #fff !important;
+}
+/* Ensure filled Material text fields are white when not disabled */
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background: #fff !important;
+}
+/* Make the Material search input background white */
+.mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--filled {
+  background: #fff !important;
+}
 .mat-mdc-raised-button:not(:disabled):hover {
   color: aliceblue !important;
 }
