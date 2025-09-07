@@ -1,0 +1,41 @@
+.drawer-content {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 340px;
+  background: #eaf6ff;
+  border-radius: 0 0 0 12px;
+  box-shadow: -2px 0 12px rgba(30,98,208,0.08);
+  padding: 0;
+  z-index: 1002;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+.drawer-inner-container {
+  width: 100%;
+  background: #fff;
+  border-radius: 0 0 0 12px;
+  box-shadow: 0 1px 4px rgba(60,60,60,0.06);
+  padding: 18px 24px;
+  display: flex;
+  flex-direction: column;
+  color: #1e62d0;
+  font-size: 1.08rem;
+  font-weight: 500;
+}
+.drawer-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.drawer-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.drawer-body {
+  font-size: 1rem;
+  color: #333;
+}

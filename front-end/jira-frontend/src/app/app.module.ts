@@ -26,6 +26,7 @@ import { PresentorComponent } from './layout/presentor/presentor.component';
 import { MasterSidebarComponent } from './layout/presentor/master-sidebar/master-sidebar.component';
 import { DetailContentComponent } from './layout/presentor/detail-content/detail-content.component';
 import { LoaderComponent } from './shared/loader/loader.component';
+import { BottomDrawerComponent } from './layout/presentor/bottom-drawer/bottom-drawer.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { LoaderComponent } from './shared/loader/loader.component';
   PresentorComponent,
   MasterSidebarComponent,
   DetailContentComponent,
-  LoaderComponent
+  LoaderComponent,
+  BottomDrawerComponent
   ],
   imports: [
     BrowserModule,

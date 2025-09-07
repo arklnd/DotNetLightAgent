@@ -11,10 +11,16 @@
       </div>
       <div class="bug-list-scroll">
         <div *ngFor="let bug of filteredBugs" class="bug-card">
-          <div class="bug-card-key">{{ bug.key }}</div>
+          <div class="bug-card-row">
+            <div class="bug-card-key">{{ bug.key }}</div>
+            <button mat-icon-button color="primary" class="drawer-btn" (click)="openDrawer(bug.key)" aria-label="Show details">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
           <div class="bug-card-summary">{{ bug.fields?.summary || bug.summary }}</div>
         </div>
       </div>
+      <app-bottom-drawer *ngIf="drawerOpen" [issueKey]="selectedIssueKey" (closeDrawer)="closeDrawer()"></app-bottom-drawer>
     </ng-container>
     <ng-template #noBugs>
       <div class="no-bugs">Please choose a Jira project from the left sidebar.</div>

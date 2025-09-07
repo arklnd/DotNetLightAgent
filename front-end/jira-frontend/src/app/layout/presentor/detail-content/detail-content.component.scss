@@ -1,3 +1,20 @@
+// Revert to full width bug list
+.bug-list-scroll {
+  width: 100%;
+}
+
+.bug-card-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.drawer-btn {
+  margin-top: 8px;
+  margin-left: auto;
+  /* Use default mat-icon-button appearance for consistency */
+}
 /* Match sidebar search input background and focus style */
 ::ng-deep .bug-search-field .mat-mdc-form-field-focus-overlay {
   background-color: #fff !important;
