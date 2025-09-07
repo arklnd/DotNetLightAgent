@@ -1,0 +1,27 @@
+### Authenticate with Jira (uses config if fields are blank)
+POST http://localhost:5212/api/jira/authenticate
+Content-Type: application/json
+
+{
+  "Url": "",
+  "Username": "",
+  "ApiToken": ""
+}
+
+### Get all open bugs for project SBP - OnBase Apps
+GET http://localhost:5212/api/jira/issues?jql=project="OBAPPS"%20AND%20status!=Done%20AND%20issuetype=Bug
+Accept: application/json
+
+### Get a Jira issue by key
+GET http://localhost:5212/api/jira/issue/OBAPPS-2326
+Accept: application/json
+
+### Get steps to reproduce for a Jira issue by key
+GET http://localhost:5212/api/jira/issue/OBAPPS-2326/steps
+Accept: application/json
+
+### Get all Jira projects
+GET http://localhost:5212/api/jira/projects
+Accept: application/json
+
+# Replace {{issueKey}} with the actual Jira issue key, e.g., OBAPPS-123
