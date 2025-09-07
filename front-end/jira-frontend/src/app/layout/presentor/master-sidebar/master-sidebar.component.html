@@ -1,12 +1,13 @@
 <div class="master-sidebar-container">
   <app-loader [show]="loading"></app-loader>
   <div *ngIf="!loading && projects.length > 0" class="project-list">
-  <mat-form-field class="project-search-field">
+    <mat-form-field class="project-search-field">
+      <mat-icon matPrefix>search</mat-icon>
       <mat-label>Search Projects</mat-label>
       <input matInput [(ngModel)]="searchTerm" placeholder="Type to filter...">
     </mat-form-field>
     <div class="project-card-list">
-      <button *ngFor="let project of filteredProjects()" class="project-card-btn" mat-raised-button>
+      <button *ngFor="let project of filteredProjects()" class="project-card-btn" mat-raised-button (click)="fetchProjectBugs(project.key)">
         {{ project.name }}
       </button>
     </div>

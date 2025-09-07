@@ -1,6 +1,6 @@
-
 import { Component, OnInit } from '@angular/core';
 import { JiraApiService } from '../../../services/jira-api.service';
+import { BugListService } from '../../../services/bug-list.service';
 
 @Component({
   selector: 'app-master-sidebar',
@@ -12,7 +12,7 @@ export class MasterSidebarComponent implements OnInit {
   projects: any[] = [];
   searchTerm = '';
 
-  constructor(private jiraApi: JiraApiService) {}
+  constructor(private jiraApi: JiraApiService, private bugListService: BugListService) {}
 
   ngOnInit() {
     this.fetchProjects();
@@ -37,5 +37,23 @@ export class MasterSidebarComponent implements OnInit {
   filteredProjects() {
     if (!this.searchTerm) return this.projects;
     return this.projects.filter(p => p.name?.toLowerCase().includes(this.searchTerm.toLowerCase()));
+  }
+
+  // Fetch open bugs for a selected project
+  fetchProjectBugs(projectKey: string): void {
+    this.loading = true;
+    const jql = `project="${projectKey}" AND status!=Done AND issuetype=Bug`;
+    this.jiraApi.getIssues(jql).subscribe({
+      next: (result: any) => {
+        const issues = Array.isArray(result) ? result : (result.issues || []);
+        this.bugListService.setBugs(issues);
+        this.loading = false;
+      },
+      error: (err: any) => {
+        console.error('Error fetching bugs for project', projectKey, err);
+        this.bugListService.setBugs([]);
+        this.loading = false;
+      }
+    });
   }
 }
