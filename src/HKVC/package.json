@@ -1,0 +1,85 @@
+{
+  "name": "hkvc",
+  "displayName": "HKVC",
+  "description": "OpenAI-compatible relay API Server using VS Code's built-in language models",
+  "version": "0.0.1",
+  "publisher": "arklnd (Arijit Kundu)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arklnd/DotNetLightAgent.git"
+  },
+  "engines": {
+    "vscode": "^1.103.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "hkvc.helloWorld",
+        "title": "Hello World"
+      },
+      {
+        "command": "hkvc.completeChat",
+        "title": "HKVC: Complete Chat"
+      },
+      {
+        "command": "hkvc.startServer",
+        "title": "HKVC: Start OpenAI relay API Server"
+      },
+      {
+        "command": "hkvc.stopServer",
+        "title": "HKVC: Stop OpenAI relay API Server"
+      },
+      {
+        "command": "hkvc.serverStatus",
+        "title": "HKVC: Check Server Status"
+      }
+    ],
+    "configuration": {
+      "title": "HKVC",
+      "properties": {
+        "hkvc.server.port": {
+          "type": "number",
+          "default": 3000,
+          "description": "Port for the HKVC OpenAI relay API Server"
+        },
+        "hkvc.server.host": {
+          "type": "string",
+          "default": "localhost",
+          "description": "Host for the HKVC OpenAI relay API Server"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test",
+    "publish": "vsce publish",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.103.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "eslint": "^9.34.0",
+    "typescript": "^5.9.2",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}
