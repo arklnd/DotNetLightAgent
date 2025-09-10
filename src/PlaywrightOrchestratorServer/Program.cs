@@ -5,7 +5,12 @@ var builder = WebApplication.CreateBuilder(args);
 		builder.Services.AddControllers();
 		builder.Services.AddEndpointsApiExplorer();
 		builder.Services.AddHttpClient();
-		builder.Services.AddSingleton<PlaywrightOrchestratorServer.Services.PromptEngineeringService>();
+		builder.Services.AddSingleton<PlaywrightOrchestratorServer.Services.PromptEngineeringService>(sp =>
+		{
+			var httpClient = sp.GetRequiredService<HttpClient>();
+			var config = sp.GetRequiredService<IConfiguration>();
+			return new PlaywrightOrchestratorServer.Services.PromptEngineeringService(httpClient, config);
+		});
 		builder.Services.AddSingleton<PlaywrightOrchestratorServer.Services.PlaywrightMcpService>();
 
 		// Add CORS policy to allow Angular frontend and support credentials
@@ -22,15 +27,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-}
-
-
-app.UseHttpsRedirection();
-// Use CORS before controllers
+// Use CORS before HTTPS redirection and controllers
 app.UseCors("AllowFrontend");
+app.UseHttpsRedirection();
 
 // Map controllers (this exposes AutomationController and any other controllers)
 app.MapControllers();

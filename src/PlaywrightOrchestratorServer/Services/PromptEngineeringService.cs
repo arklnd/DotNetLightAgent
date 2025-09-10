@@ -6,27 +6,51 @@ namespace PlaywrightOrchestratorServer.Services
     public class PromptEngineeringService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _hkvcApiUrl = "http://localhost:3000/v1/chat/completions"; 
+        private readonly string _hkvcApiUrl = "http://localhost:3000/v1/chat/completions";
+        private readonly string _systemPrompt;
 
-        public PromptEngineeringService(HttpClient httpClient)
+        public PromptEngineeringService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _systemPrompt = configuration["PromptEngineering:SystemPrompt"] ?? "";
         }
 
         public async Task<List<string>> ExtractStepsAsync(string instructions)
         {
-            // Example: Call HKVC API server for prompt engineering
-            // Replace with your actual prompt and parsing logic
-            var prompt = $"Extract step-by-step instructions from the following text:\n{instructions}";
-            var response = await _httpClient.PostAsJsonAsync(_hkvcApiUrl, new
+            // Split instructions into lines
+            var lines = instructions.Split('\n')
+                .Select(l => l.Trim())
+                .Where(l => !string.IsNullOrWhiteSpace(l))
+                .ToList();
+
+            var transformedSteps = new List<string>();
+            foreach (var line in lines)
             {
-                prompt = prompt,
-                max_tokens = 512
-            });
-            var result = await response.Content.ReadFromJsonAsync<OpenAiCompletionResponse>();
-            // Assume result.choices[0].text contains steps separated by newlines
-            var steps = result?.choices?.FirstOrDefault()?.text?.Split('\n')?.Where(s => !string.IsNullOrWhiteSpace(s)).ToList() ?? new List<string>();
-            return steps;
+                var transformed = await TransformInstructionForPlaywrightAsync(line);
+                transformedSteps.Add(transformed);
+            }
+            return transformedSteps;
+        }
+
+        // Transforms a single instruction into a Playwright MCP-friendly command using LLM
+        public async Task<string> TransformInstructionForPlaywrightAsync(string instruction)
+        {
+            var requestBody = new
+            {
+                model = "copilot-gpt-4o",
+                messages = new[]
+                {
+                    new { role = "system", content = _systemPrompt },
+                    new { role = "user", content = instruction }
+                }
+            };
+
+            var response = await _httpClient.PostAsJsonAsync(_hkvcApiUrl, requestBody);
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<ChatCompletionResponse>();
+            var content = result?.choices?.FirstOrDefault()?.message?.content ?? string.Empty;
+            return content;
         }
 
         public async Task<string> GetCompletionAsync(string prompt)
@@ -47,23 +71,24 @@ namespace PlaywrightOrchestratorServer.Services
             return result?.choices?.FirstOrDefault()?.message?.content ?? string.Empty;
         }
 
-        private class ChatCompletionResponse
-        {
-            public List<Choice> choices { get; set; } = new();
-            public class Choice
-            {
-                public Message message { get; set; } = new();
-            }
-            public class Message
-            {
-                public string content { get; set; } = string.Empty;
-            }
-        }
-
-        private class OpenAiCompletionResponse
-        {
-            public List<Choice> choices { get; set; } = new();
-            public class Choice { public string text { get; set; } = string.Empty; }
-        }
     }
+}
+
+public class ChatCompletionResponse
+{
+    public List<ChatCompletionResponse.Choice> choices { get; set; } = new();
+    public class Choice
+    {
+        public Message message { get; set; } = new();
+    }
+    public class Message
+    {
+        public string content { get; set; } = string.Empty;
+    }
+}
+
+public class OpenAiCompletionResponse
+{
+    public List<OpenAiCompletionResponse.Choice> choices { get; set; } = new();
+    public class Choice { public string text { get; set; } = string.Empty; }
 }

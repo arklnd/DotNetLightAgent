@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-bottom-drawer',
@@ -11,6 +12,8 @@ export class BottomDrawerComponent {
   @Input() loading: boolean = false;
   @Output() closeDrawer = new EventEmitter<void>();
 
+  constructor(private http: HttpClient) {}
+
   close() {
     this.closeDrawer.emit();
   }
@@ -22,7 +25,23 @@ export class BottomDrawerComponent {
         .map(line => line.replace(/^\s*#\s*/, '').trim())
         .filter(line => line.length > 0);
       const formatted = lines.map((line, idx) => `Instruction step ${idx + 1}: ${line}`).join('\n');
-      alert(formatted);
+      // Send to orchestrator API
+      this.sendStepsToOrchestrator(formatted);
     }
+  }
+
+  sendStepsToOrchestrator(formatted: string) {
+    const apiUrl = 'http://localhost:5230/api/automation/steps';
+    const body = { instructions: formatted };
+    this.http.post(apiUrl, body).subscribe({
+      next: (result) => {
+        console.log('Orchestrator response:', result);
+        alert('Steps sent to orchestrator. Check console for response.');
+      },
+      error: (err) => {
+        console.error('Error sending steps to orchestrator:', err);
+        alert('Failed to send steps to orchestrator.');
+      }
+    });
   }
 }
