@@ -20,14 +20,50 @@
         <ng-template #noSteps>
           <div class="steps-empty">No steps found for this issue.</div>
         </ng-template>
+        <!--render steps response from stream api-->
+
+        <!-- Orchestrator Response Section -->
+        <!-- Debug: orchestratorResponse.length = {{ orchestratorResponse.length }}, orchestratorLoading = {{ orchestratorLoading }} -->
+        <div class="orchestrator-response" *ngIf="orchestratorResponse.length > 0 || orchestratorLoading">
+          <div class="response-title">Orchestrator Response</div>
+
+          <div class="response-loader" *ngIf="orchestratorLoading">
+            <mat-spinner diameter="24"></mat-spinner>
+            <span class="loader-text">Processing automation steps...</span>
+          </div>
+
+          <div class="response-list" *ngIf="orchestratorResponse.length > 0">
+            <p>{{ orchestratorResponse.length }} responses</p>
+            <span *ngFor="let response of orchestratorResponse; let i = index" class="response-item">
+              <span class="response-text">{{ response }}</span>
+            </span>
+            <!-- <mat-list>
+              <mat-list-item *ngFor="let response of orchestratorResponse; let i = index">
+                <mat-icon mat-list-icon>{{ i === orchestratorResponse.length - 1 && orchestratorLoading ? 'schedule' : 'check_circle' }}</mat-icon>
+                <div mat-line>{{ response }}</div>
+              </mat-list-item>
+            </mat-list> -->
+          </div>
+        </div>
         <button
           mat-flat-button
           color="primary"
           class="auto-repro-btn"
           (click)="showStepsAlert()"
           *ngIf="steps"
+          [disabled]="orchestratorLoading"
         >
-          Auto Reproduce
+          {{ orchestratorLoading ? 'Processing...' : 'Auto Reproduce' }}
+        </button>
+
+        <!-- Test Button -->
+        <button
+          mat-flat-button
+          color="accent"
+          (click)="testOrchestratorResponse()"
+          style="margin-top: 10px; width: 100%;"
+        >
+          Test Response Rendering
         </button>
       </ng-container>
     </div>
