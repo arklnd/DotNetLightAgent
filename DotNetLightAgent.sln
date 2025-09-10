@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraIntegration", "src\Jira
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JiraAutomateServer", "src\JiraAutomateServer\JiraAutomateServer.csproj", "{8FE7F134-D230-4A02-9C28-4E3D9C09FFA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaywrightOrchestratorServer", "src\PlaywrightOrchestratorServer\PlaywrightOrchestratorServer.csproj", "{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,18 @@ Global
 		{8FE7F134-D230-4A02-9C28-4E3D9C09FFA8}.Release|x64.Build.0 = Release|Any CPU
 		{8FE7F134-D230-4A02-9C28-4E3D9C09FFA8}.Release|x86.ActiveCfg = Release|Any CPU
 		{8FE7F134-D230-4A02-9C28-4E3D9C09FFA8}.Release|x86.Build.0 = Release|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Debug|x64.Build.0 = Debug|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Debug|x86.Build.0 = Debug|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Release|x64.ActiveCfg = Release|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Release|x64.Build.0 = Release|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Release|x86.ActiveCfg = Release|Any CPU
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,5 +96,6 @@ Global
 		{FAD57A38-99AF-463F-945A-47855519543D} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{2735A8A1-6221-4FF3-84C8-F14AB1630390} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{8FE7F134-D230-4A02-9C28-4E3D9C09FFA8} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{EFBB4DF0-4DCF-43BB-B4C6-7306E1D3B27B} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

@@ -30,5 +30,3 @@ Content-Type: application/json
   "Username": "",
   "ApiToken": ""
 }
-
-# Replace {{issueKey}} with the actual Jira issue key, e.g., OBAPPS-123
