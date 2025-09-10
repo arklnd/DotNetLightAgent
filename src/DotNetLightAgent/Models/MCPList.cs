@@ -48,7 +48,7 @@ namespace DotNetLightAgent.Models
             {
                 Name = "playwright",
                 Command = "npx",
-                Arguments = ["@playwright/mcp@latest"],
+                Arguments = ["@playwright/mcp@latest", "--headless"],
                 ShutdownTimeout = TimeSpan.FromSeconds(90)
             },
         ];
