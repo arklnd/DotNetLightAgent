@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureAIInference" Version="1.64.0-beta" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.60.0-alpha" />
     <PackageReference Include="ModelContextProtocol.Core" Version="0.3.0-preview.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
   </ItemGroup>
 
 </Project>
