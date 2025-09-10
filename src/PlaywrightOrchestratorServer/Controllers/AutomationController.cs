@@ -10,9 +10,9 @@ namespace PlaywrightOrchestratorServer.Controllers
     public class AutomationController : ControllerBase
     {
         private readonly PromptEngineeringService _promptService;
-        private readonly PlaywrightMcpService _mcpService;
+        private readonly PlaywrightMcpStdioService _mcpService;
 
-        public AutomationController(PromptEngineeringService promptService, PlaywrightMcpService mcpService)
+        public AutomationController(PromptEngineeringService promptService, PlaywrightMcpStdioService mcpService)
         {
             _promptService = promptService;
             _mcpService = mcpService;
@@ -35,13 +35,13 @@ namespace PlaywrightOrchestratorServer.Controllers
 
                 // 2. Execute the transformed step via Playwright MCP
                 var stepResult = await _mcpService.ExecuteStepAsync(transformed);
-                results.Add(stepResult);
+                //results.Add(stepResult);
 
-                // Early exit if a step fails
-                if (!stepResult.Done)
-                {
-                    break;
-                }
+                //// Early exit if a step fails
+                //if (!stepResult.Done)
+                //{
+                //    break;
+                //}
             }
             return Ok(results);
         }

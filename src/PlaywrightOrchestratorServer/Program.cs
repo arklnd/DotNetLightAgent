@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 			return new PlaywrightOrchestratorServer.Services.PromptEngineeringService(httpClient, config);
 		});
 		builder.Services.AddSingleton<PlaywrightOrchestratorServer.Services.PlaywrightMcpService>();
+		builder.Services.AddSingleton<PlaywrightOrchestratorServer.Services.PlaywrightMcpStdioService>();
 
 		// Add CORS policy to allow Angular frontend and support credentials
 		builder.Services.AddCors(options =>
