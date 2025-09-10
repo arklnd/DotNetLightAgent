@@ -31,7 +31,7 @@ namespace PlaywrightOrchestratorServer.Controllers
             foreach (var instruction in instructionLines)
             {
                 // 1. Transform instruction to Playwright command using LLM
-                var transformed = await _promptService.TransformInstructionForPlaywrightAsync(instruction); // Use same model as GetCompletionAsync
+                var transformed = await _promptService.TransformInstructionForPlaywrightAsync(instruction);
 
                 // 2. Execute the transformed step via Playwright MCP
                 var stepResult = await _mcpService.ExecuteStepAsync(transformed);

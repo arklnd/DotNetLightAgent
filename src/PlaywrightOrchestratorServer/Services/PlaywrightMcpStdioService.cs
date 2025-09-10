@@ -12,14 +12,14 @@ using Microsoft.SemanticKernel.Connectors.Ollama;
 
 namespace PlaywrightOrchestratorServer.Services
 {
-	public class PlaywrightMcpStdioService
-	{
-		// Simulated tool list for development/testing
-		private static readonly List<string> SimulatedTools = new() { "click", "type", "navigate", "screenshot" };
+    public class PlaywrightMcpStdioService
+    {
+        // Simulated tool list for development/testing
+        private static readonly List<string> SimulatedTools = new() { "click", "type", "navigate", "screenshot" };
 
-		// Called from [HttpPost("steps")]
-		public async Task<string> ExecuteStepAsync(string step)
-		{
+        // Called from [HttpPost("steps")]
+        public async Task<string> ExecuteStepAsync(string step)
+        {
             // Populate values for your Ollama deployment
             var modelId = "copilot-gpt-5"; // or any other model you have installed in Ollama
             var endpoint = new Uri("http://localhost:3000/v1/"); // default Ollama endpoint
@@ -66,6 +66,57 @@ namespace PlaywrightOrchestratorServer.Services
                     var tools = await mcpClient.ListToolsAsync();
                     kernel.Plugins.AddFromFunctions(stdmcp.Name, tools.Select(aiFunction => aiFunction.AsKernelFunction()));
                     Console.WriteLine($"\r[🟢] Successfully connected to <{stdmcp.Name}> with {tools.Count} tools available.");
+
+
+                    OllamaPromptExecutionSettings ollamaPromptExecutionSettings = new()
+                    {
+                        FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+                        // Temperature = 0.6f,
+                        // TopP = (float?)0.95,
+                        // TopK = 40,
+                        ExtensionData = new Dictionary<string, object>
+                        {
+                            { "num_predict", 512 },
+                            { "num_ctx", 4096 }
+                        }
+                    };
+
+                    var history = new ChatHistory();
+                    history.AddMessage(AuthorRole.System, @"You are a helpful AI assistant named Jira-Sic with access to various tools and capabilities including:
+- Ability to call functions and perform actions based on user requests");
+
+                    history.AddUserMessage(step);
+
+                    string fullResponse = "";
+                    await foreach (var chunk in chatCompletionService.GetStreamingChatMessageContentsAsync(
+                        history,
+                        executionSettings: ollamaPromptExecutionSettings,
+                        kernel: kernel))
+                    {
+                        if (chunk.Role == AuthorRole.Tool)
+                        {
+                            // This is a tool response
+                            Console.ForegroundColor = ConsoleColor.Magenta;
+                            Console.Write("[🔧] ");
+                            Console.ResetColor();
+                            Console.WriteLine(chunk.Content);
+                            history.AddMessage(AuthorRole.Tool, chunk.Content ?? "");
+                        }
+                        else if (chunk.Role == AuthorRole.Assistant && !string.IsNullOrEmpty(chunk.Content))
+                        {
+                            // Regular assistant response
+                            Console.Write(chunk.Content);
+                            fullResponse += chunk.Content;
+                            history.AddMessage(AuthorRole.Assistant, chunk.Content ?? "");
+                        }
+                        else if (!string.IsNullOrEmpty(chunk.Content))
+                        {
+                            // Fallback for any other content
+                            Console.Write(chunk.Content);
+                            fullResponse += chunk.Content;
+                            history.AddMessage(AuthorRole.Assistant, chunk.Content ?? "");
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -79,6 +130,6 @@ namespace PlaywrightOrchestratorServer.Services
 
             // Simulate a response
             return $"[Simulated] Step received: {step}";
-		}
-	}
+        }
+    }
 }
