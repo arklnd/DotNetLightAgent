@@ -1,0 +1,14 @@
+{
+	"servers": {
+		"fancy-mcp": {
+			"type": "stdio",
+			"command": "dotnet",
+			"args": [
+				"run",
+				"--project",
+				"C:\\Codebase\\MCP\\MCPServer\\MCPServer.csproj",
+			]
+		}
+	},
+	"inputs": []
+}
