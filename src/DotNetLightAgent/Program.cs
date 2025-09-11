@@ -36,15 +36,4 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 
-// Initialize the agent service
-var agentService = app.Services.GetRequiredService<IAgentService>();
-await agentService.InitializeAsync();
-
-Console.WriteLine("🚀 DotNet Light Agent API is running!");
-Console.WriteLine("📖 Swagger documentation available at: /swagger");
-Console.WriteLine("� Chat endpoint: POST /api/chat/message");
-Console.WriteLine("🌊 Streaming endpoint: POST /api/chat/stream");
-Console.WriteLine("🧹 Clear history: POST /api/chat/clear");
-Console.WriteLine("� Get history: GET /api/chat/history");
-
 app.Run();
