@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Web Client - OB Studio Launcher</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+        
+        button {
+            background-color: #007acc;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #005a9e;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .response-section {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 5px;
+            min-height: 100px;
+        }
+        
+        .response-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .response-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .response-info {
+            background-color: #e2e3e5;
+            border: 1px solid #d6d8db;
+            color: #383d41;
+        }
+        
+        .examples {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .examples h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .examples ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .examples li {
+            margin: 5px 0;
+            cursor: pointer;
+            color: #007acc;
+        }
+        
+        .examples li:hover {
+            text-decoration: underline;
+        }
+        
+        .status {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .status.online {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status.offline {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007acc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 OnBase Commander</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">
+            ⚡ Powered by persistent MCP server connection for optimal performance
+        </p>
+        
+        <div id="status" class="status offline">
+            Checking server status...
+        </div>
+        
+        <div class="input-section">
+            <label for="commandInput">Enter natural language command:</label>
+            <input type="text" id="commandInput" placeholder="e.g., launch ob studio, start onbase, open ob..." />
+            <button onclick="executeCommand()" id="executeBtn">Execute Command</button>
+            <button onclick="checkStatus()" id="statusBtn">Check Status</button>
+        </div>
+        
+        <div class="examples">
+            <h3>Example Commands:</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                Click any command below to try it (uses persistent MCP connection):
+            </p>
+            <ul>
+                <li onclick="setCommand('launch ob studio')">launch ob studio</li>
+                <li onclick="setCommand('start ob')">start ob</li>
+                <li onclick="setCommand('open onbase studio')">open onbase studio</li>
+                <li onclick="setCommand('run ob studio')">run ob studio</li>
+            </ul>
+        </div>
+        
+        <div id="response" class="response-section response-info">
+            Ready to execute commands. Enter a command above and click "Execute Command".
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Check status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkStatus();
+        });
+        
+        // Allow Enter key to execute command
+        document.getElementById('commandInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                executeCommand();
+            }
+        });
+        
+        async function executeCommand() {
+            const commandInput = document.getElementById('commandInput');
+            const command = commandInput.value.trim();
+            
+            if (!command) {
+                showResponse('Please enter a command.', 'error');
+                return;
+            }
+            
+            const executeBtn = document.getElementById('executeBtn');
+            const originalText = executeBtn.textContent;
+            
+            try {
+                executeBtn.disabled = true;
+                executeBtn.innerHTML = 'Executing... <span class="loading"></span>';
+                
+                showResponse('Executing command...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/mcp/execute`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ command: command })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    showResponse('✅ Success');
+                } else {
+                    showResponse('❌ Error');
+                }
+                
+            } catch (error) {
+                showResponse(`❌ Network Error: ${error.message}`, 'error');
+            } finally {
+                executeBtn.disabled = false;
+                executeBtn.textContent = originalText;
+            }
+        }
+        
+        async function checkStatus() {
+            const statusDiv = document.getElementById('status');
+            const statusBtn = document.getElementById('statusBtn');
+            
+            try {
+                statusBtn.disabled = true;
+                statusDiv.textContent = 'Checking...';
+                statusDiv.className = 'status offline';
+                
+                const response = await fetch(`${API_BASE}/api/mcp/status`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.textContent = `✅ Server Online - ${result.status}`;
+                    statusDiv.className = 'status online';
+                } else {
+                    statusDiv.textContent = '❌ Server Offline';
+                    statusDiv.className = 'status offline';
+                }
+                
+            } catch (error) {
+                statusDiv.textContent = '❌ Cannot connect to server';
+                statusDiv.className = 'status offline';
+            } finally {
+                statusBtn.disabled = false;
+            }
+        }
+        
+        function showResponse(message, type) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.textContent = message;
+            responseDiv.className = `response-section response-${type}`;
+        }
+        
+        function setCommand(command) {
+            document.getElementById('commandInput').value = command;
+            document.getElementById('commandInput').focus();
+        }
+    </script>
+</body>
+</html>
