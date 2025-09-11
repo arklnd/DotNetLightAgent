@@ -12,14 +12,39 @@ export class BottomDrawerComponent {
   @Input() loading: boolean = false;
   @Output() closeDrawer = new EventEmitter<void>();
 
-  orchestratorResponse: string[] = [];
+  orchestratorResponse: any[] = [];
   orchestratorLoading: boolean = false;
 
   constructor(private http: HttpClient) {}
 
   // Test method to verify rendering
   testOrchestratorResponse() {
-    this.orchestratorResponse = ['Test response 1', 'Test response 2', 'Test response 3'];
+    this.orchestratorResponse = [
+      {
+        id: 1,
+        timestamp: new Date().toISOString(),
+        type: 'status',
+        content: 'Starting browser automation workflow',
+        status: 'in_progress',
+        sessionId: 'test-session'
+      },
+      {
+        id: 2,
+        timestamp: new Date().toISOString(),
+        type: 'status',
+        content: 'Page loaded successfully, taking snapshot to see form fields',
+        status: 'success',
+        sessionId: 'test-session'
+      },
+      {
+        id: 3,
+        timestamp: new Date().toISOString(),
+        type: 'status',
+        content: 'Document not found in search results',
+        status: 'error',
+        sessionId: 'test-session'
+      }
+    ];
     this.orchestratorLoading = false;
     console.log('Test: orchestratorResponse set to:', this.orchestratorResponse);
   }
@@ -29,6 +54,44 @@ export class BottomDrawerComponent {
     // Clear orchestrator response when closing
     this.orchestratorResponse = [];
     this.orchestratorLoading = false;
+  }
+
+  // TrackBy function for performance optimization
+  trackByResponseId(index: number, item: any): any {
+    return item.id || index;
+  }
+
+  // Get status icon based on status
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'success': return 'check_circle';
+      case 'error': return 'error';
+      case 'in_progress': return 'schedule';
+      case 'warning': return 'warning';
+      default: return 'info';
+    }
+  }
+
+  // Get status icon CSS class
+  getStatusIconClass(status: string): string {
+    switch (status) {
+      case 'success': return 'icon-success';
+      case 'error': return 'icon-error';
+      case 'in_progress': return 'icon-progress';
+      case 'warning': return 'icon-warning';
+      default: return 'icon-info';
+    }
+  }
+
+  // Format timestamp for display
+  formatTimestamp(timestamp: string): string {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('en-US', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
   }
 
   showStepsAlert() {
@@ -101,10 +164,38 @@ export class BottomDrawerComponent {
           const content = jsonData.content || jsonData.Content;
           const isComplete = jsonData.isComplete || jsonData.IsComplete;
 
-          if (content && !this.orchestratorResponse.includes(content)) {
-            this.orchestratorResponse.push(content);
-            console.log('Added response:', content);
+          if (content) {
+            // Try to parse the nested JSON content
+            let parsedContent;
+            try {
+              parsedContent = JSON.parse(content);
+            } catch {
+              // If parsing fails, treat content as plain text
+              parsedContent = { content: content, type: 'text', status: 'info' };
+            }
+
+            // Create a response object with metadata
+            const responseItem = {
+              id: Date.now() + Math.random(), // Unique ID for tracking
+              timestamp: jsonData.Timestamp || new Date().toISOString(),
+              type: parsedContent.type || 'text',
+              content: parsedContent.content || content,
+              status: parsedContent.status || 'info',
+              sessionId: jsonData.SessionId
+            };
+
+            // Check if this response already exists (avoid duplicates)
+            const exists = this.orchestratorResponse.some(existing =>
+              existing.content === responseItem.content &&
+              existing.timestamp === responseItem.timestamp
+            );
+
+            if (!exists) {
+              this.orchestratorResponse.push(responseItem);
+              console.log('Added response:', responseItem);
+            }
           }
+
           if (isComplete) {
             this.orchestratorLoading = false;
             console.log('Stream completed');
