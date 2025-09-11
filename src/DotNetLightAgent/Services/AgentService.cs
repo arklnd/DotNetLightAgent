@@ -41,7 +41,7 @@ public class AgentService : IAgentService, IDisposable
             _logger.LogInformation("Initializing Agent Service...");
 
             // Create kernel configuration
-            var modelId = "copilot-gemini-2.5-pro"; // or any other model you have installed in Ollama
+            var modelId = "copilot-claude-sonnet-4"; // or any other model you have installed in Ollama
             var endpoint = new Uri("http://localhost:3000/v1/"); // default Ollama endpoint
 
             var kernelBuilder = Kernel.CreateBuilder();

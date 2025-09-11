@@ -4,6 +4,8 @@ using DotNetLightAgent.Services;
 using DotNetLightAgent.DTOs;
 using System.Text.Json;
 using System.Text;
+using System.Text.RegularExpressions;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace DotNetLightAgent.Controllers;
 
@@ -93,25 +95,88 @@ public class ChatController : ControllerBase
             Response.Headers["Connection"] = "keep-alive";
             Response.Headers["Access-Control-Allow-Origin"] = "*";
 
+            var buffer = new StringBuilder();
+            var statusMessagePattern = new Regex(@"🙉({.*?})🙊", RegexOptions.Compiled);
+
+            _logger.LogDebug("Starting stream processing for session {SessionId}", sessionId);
+
             await foreach (var chunk in _agentService.SendMessageStreamAsync(
                 request.Message, 
                 sessionId, 
                 cancellationToken))
             {
-                var streamChunk = new ChatStreamChunk
+                if (string.IsNullOrEmpty(chunk.Content))
                 {
-                    Content = chunk.Content,
-                    Role = chunk.Role?.ToString() ?? "unknown",
-                    SessionId = sessionId,
-                    IsComplete = false
-                };
+                    _logger.LogDebug("Received empty chunk, skipping");
+                    continue;
+                }
 
-                var json = JsonSerializer.Serialize(streamChunk);
-                var data = $"data: {json}\n\n";
+                _logger.LogDebug("Received chunk: {ChunkContent}", chunk.Content);
+
+                // Add chunk content to buffer
+                buffer.Append(chunk.Content);
+                var bufferContent = buffer.ToString();
+
+                _logger.LogDebug("Current buffer content: {BufferContent}", bufferContent);
+
+                // Process all complete status messages in the buffer
+                var matches = statusMessagePattern.Matches(bufferContent);
                 
-                await Response.WriteAsync(data, cancellationToken);
-                await Response.Body.FlushAsync(cancellationToken);
+                _logger.LogDebug("Found {MatchCount} status message matches", matches.Count);
+                
+                if (matches.Count > 0)
+                {
+                    // Process matches in reverse order to avoid index shifting issues
+                    for (int i = matches.Count - 1; i >= 0; i--)
+                    {
+                        var match = matches[i];
+                        try
+                        {
+                            // Extract and send only the JSON content from status messages
+                            var statusJson = match.Groups[1].Value;
+                            
+                            _logger.LogDebug("Processing status message: {StatusJson}", statusJson);
+                            
+                            var streamChunk = new ChatStreamChunk
+                            {
+                                Content = statusJson,
+                                Role = AuthorRole.Assistant.ToString(),
+                                SessionId = sessionId,
+                                IsComplete = false
+                            };
+
+                            var json = JsonSerializer.Serialize(streamChunk);
+                            var data = $"data: {json}\n\n";
+                            
+                            _logger.LogDebug("Sending stream chunk: {Data}", data);
+                            
+                            await Response.WriteAsync(data, cancellationToken);
+                            await Response.Body.FlushAsync(cancellationToken);
+                        }
+                        catch (JsonException ex)
+                        {
+                            _logger.LogWarning(ex, "Failed to parse status message: {StatusJson}", match.Groups[1].Value);
+                        }
+                    }
+
+                    // Remove all processed status messages from buffer
+                    var cleanedContent = statusMessagePattern.Replace(bufferContent, "");
+                    buffer.Clear();
+                    buffer.Append(cleanedContent);
+                    
+                    _logger.LogDebug("Updated buffer after removing all processed messages: {UpdatedBuffer}", buffer.ToString());
+                }
+                
+                // Only clear non-status content if buffer gets too large (prevent memory issues)
+                // But preserve potential partial status messages
+                if (buffer.Length > 10000 && !bufferContent.Contains("🙉"))
+                {
+                    _logger.LogDebug("Buffer too large and no partial status messages, clearing: {BufferContent}", buffer.ToString());
+                    buffer.Clear();
+                }
             }
+
+            _logger.LogDebug("Stream processing completed, sending completion marker");
 
             // Send completion marker
             var completionChunk = new ChatStreamChunk
@@ -125,6 +190,8 @@ public class ChatController : ControllerBase
             var completionJson = JsonSerializer.Serialize(completionChunk);
             var completionData = $"data: {completionJson}\n\n";
             
+            _logger.LogDebug("Sending completion data: {CompletionData}", completionData);
+            
             await Response.WriteAsync(completionData, cancellationToken);
             await Response.Body.FlushAsync(cancellationToken);
         }
@@ -133,9 +200,16 @@ public class ChatController : ControllerBase
             _logger.LogError(ex, "Error processing streaming chat message");
             
             // Send error event
+            var errorContent = JsonSerializer.Serialize(new 
+            {
+                type = "error",
+                content = $"Error: {ex.Message}",
+                status = "error"
+            });
+
             var errorChunk = new ChatStreamChunk
             {
-                Content = $"Error: {ex.Message}",
+                Content = errorContent,
                 Role = "error",
                 SessionId = request.SessionId ?? "unknown",
                 IsComplete = true

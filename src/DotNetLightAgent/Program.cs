@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddSingleton<IAgentService, AgentService>();
 
 // Configure logging
-builder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Information));
+builder.Services.AddLogging(services => services.AddConsole().SetMinimumLevel(LogLevel.Debug));
 
 var app = builder.Build();
 
