@@ -101,7 +101,7 @@ public class ChatController : ControllerBase
                 var streamChunk = new ChatStreamChunk
                 {
                     Content = chunk.Content,
-                    Role = chunk.Role?.Label ?? "unknown",
+                    Role = chunk.Role?.ToString() ?? "unknown",
                     SessionId = sessionId,
                     IsComplete = false
                 };
