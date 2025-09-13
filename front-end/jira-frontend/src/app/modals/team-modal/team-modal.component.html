@@ -1,0 +1,15 @@
+<div class="team-modal-wrapper">
+		<!-- Close button removed as requested -->
+	<h2 class="modal-title">Team Members</h2>
+	<div class="lead-member-card">
+		<mat-icon color="primary">person</mat-icon>
+		<span class="lead-member-name">{{teamMembers[0]}}</span>
+	</div>
+	<div class="team-grid">
+		<div class="team-card" *ngFor="let member of teamMembers.slice(1)">
+			<mat-icon color="primary">person</mat-icon>
+			<span class="member-name">{{member}}</span>
+		</div>
+	</div>
+</div>
+

@@ -1,0 +1,18 @@
+var modelId = "copilot-gpt-4o"; // or any other model you have installed in Ollama
+var endpoint = new Uri("http://localhost:3000/v1/"); // default Ollama endpoint
+
+// Create a kernel with Ollama chat completion
+var kernelBuilder = Kernel.CreateBuilder();
+// Add timeout configuration and better error handling
+var httpClient = new HttpClient()
+{
+    Timeout = TimeSpan.FromMinutes(5) // Increase timeout
+};
+
+// Try OpenAI connector with custom HttpClient
+kernelBuilder.AddOpenAIChatCompletion(
+    modelId: modelId, 
+    endpoint: endpoint, 
+    apiKey: "placeholder", // Some services still require a placeholder
+    httpClient: httpClient
+);

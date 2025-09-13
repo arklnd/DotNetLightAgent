@@ -1,0 +1,1 @@
+Open: https://rdv-010283.hylandqa.net/AppNet/Apps/ArijitTestApp<br>fill username: ARIKUNDU<br>fill password: password<br>Click Login<br>wait for page to load<br>click on "mstdtls"<br>Click on "Search"<br>Open document: 141598 - Document - 10-08-2012 - Used for testing <<ScriptIncludes><br>

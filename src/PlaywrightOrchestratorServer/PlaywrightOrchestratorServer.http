@@ -1,0 +1,16 @@
+
+### Sample: Send instructions to Orchestrator
+POST http://localhost:5230/api/automation/steps
+Content-Type: application/json
+
+{
+  "instructions": "Step 1: Open browser. Step 2: Go to example.com. Step 3: Click login."
+}
+
+### HKVC Completion Example
+POST http://localhost:5230/api/automation/completion
+Content-Type: application/json
+
+{
+  "prompt": "Write a haiku about Jira bugs."
+}

@@ -1,0 +1,43 @@
+
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+body {
+	background: linear-gradient(120deg, #e3f0fc 0%, #fffbe7 100%);
+}
+
+@import 'styles/tokens';
+@import 'styles/theme';
+@import 'styles/typography';
+
+// Set global icon button size for Material icon buttons (after tokens import)
+.mat-mdc-icon-button {
+	height: $icon-button-size;
+	width: $icon-button-size;
+	min-width: $icon-button-size;
+	min-height: $icon-button-size;
+}
+
+// Ensure icon button touch target is also small
+.mat-mdc-icon-button .mat-mdc-button-touch-target {
+	height: $icon-button-size;
+	width: $icon-button-size;
+	border-radius: 50%;
+	box-shadow: 0 2px 8px 0 rgba(60,60,60,0.10), 0 1.5px 6px 0 rgba(60,60,60,0.08);
+	border: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	background: transparent;
+	color: inherit;
+	transition: box-shadow 0.2s, background 0.2s;
+}
+.mat-mdc-icon-button .mat-mdc-button-touch-target:hover {
+	background: rgba(25, 118, 210, 0.08);
+	box-shadow: 0 4px 16px 0 rgba(60,60,60,0.16);
+}
+
+// Set global icon size for Material icons
+.mat-icon {
+	font-size: $icon-size;
+}

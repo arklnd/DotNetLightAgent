@@ -1,0 +1,173 @@
+// Revert to full width bug list
+.bug-list-scroll {
+  width: 100%;
+}
+
+.bug-card-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.drawer-btn {
+  margin-top: 8px;
+  margin-left: auto;
+  /* Use default mat-icon-button appearance for consistency */
+}
+/* Match sidebar search input background and focus style */
+::ng-deep .bug-search-field .mat-mdc-form-field-focus-overlay {
+  background-color: #fff !important;
+}
+::ng-deep .bug-search-field .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: #fff !important;
+}
+.bug-search-field .mat-mdc-form-field-focus-overlay {
+  background-color: #fff !important;
+}
+.bug-search-field .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: #fff !important;
+}
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background: #fff !important;
+}
+.mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--filled {
+  background: #fff !important;
+}
+// Remove background color for the search input in detail pane when focused/active
+::ng-deep .bug-search-field .mdc-text-field--filled.mdc-text-field--focused,
+::ng-deep .bug-search-field .mdc-text-field--filled:focus-within,
+::ng-deep .bug-search-field .mat-mdc-form-field-flex:focus-within,
+::ng-deep .bug-search-field .mat-mdc-form-field-flex:active {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+// Remove grey background on focus/active for the search box
+::ng-deep .bug-search-field .mat-mdc-form-field-flex,
+::ng-deep .bug-search-field .mdc-text-field--filled,
+::ng-deep .bug-search-field .mdc-text-field--filled.mdc-text-field--focused,
+::ng-deep .bug-search-field .mdc-text-field--filled:not(.mdc-text-field--disabled):not(.mdc-text-field--invalid):not(.mdc-text-field--focused):hover {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.detail-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.bug-search-field {
+  min-width: 220px;
+  max-width: 320px;
+  margin-left: auto;
+  background: transparent !important;
+}
+::ng-deep .bug-search-field .mat-mdc-form-field-flex,
+::ng-deep .bug-search-field .mdc-text-field--filled {
+  background: transparent !important;
+}
+.bug-count {
+  color: #1e62d0;
+  font-size: 1.08rem;
+  font-weight: 500;
+  margin-left: 6px;
+}
+.bug-list-scroll {
+  max-height: 66vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 8px;
+  background: #fafdff;
+  padding: 0 2px;
+  box-sizing: border-box;
+}
+.bug-card {
+  /* Prevent card from causing horizontal overflow */
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.bug-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(60, 60, 60, 0.10);
+  margin: 10px 0;
+  padding: 16px 20px 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: box-shadow 0.18s, transform 0.18s;
+  cursor: pointer;
+}
+.bug-card:hover {
+  box-shadow: 0 6px 18px rgba(30, 98, 208, 0.16);
+  transform: translateY(-2px) scale(1.01);
+}
+.bug-card-key {
+  font-weight: 600;
+  color: #1e62d0;
+  font-size: 1.08rem;
+  margin-bottom: 2px;
+}
+.bug-card-summary {
+  color: #2a3b4d;
+  font-size: 1.08rem;
+  font-weight: 400;
+  word-break: break-word;
+}
+.bug-list-scroll {
+  max-height: 66vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  background: #fafdff;
+}
+.mat-list {
+  max-height: 66vh;
+  overflow-y: auto;
+  padding-right: 8px;
+  border-radius: 8px;
+  background: #fafdff;
+}
+.bug-key {
+  font-weight: 600;
+  color: #1e62d0;
+  margin-right: 18px;
+  min-width: 80px;
+  display: inline-block;
+}
+.bug-summary {
+  color: #2a3b4d;
+  font-size: 1.05rem;
+  font-weight: 400;
+}
+.no-bugs {
+  color: #888;
+  font-size: 1.1rem;
+  margin-top: 24px;
+  text-align: center;
+}
+.detail-content-container {
+  flex: 1 1 auto;
+  height: 67vh;
+  width: 1120px;
+  background: var(--color-detail, #fafdff);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  transition: box-shadow 0.2s;
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .detail-content-container {
+    width: 100vw;
+    min-width: 0;
+    max-width: none;
+    border-radius: 0;
+    padding: 12px 4px;
+  }
+}

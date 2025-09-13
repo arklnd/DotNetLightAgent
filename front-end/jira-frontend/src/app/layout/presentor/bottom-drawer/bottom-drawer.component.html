@@ -1,0 +1,84 @@
+<div class="drawer-content">
+  <div class="drawer-inner-container">
+    <div class="drawer-header-row">
+      <span class="drawer-title">Details for: <b>{{ issueKey }}</b></span>
+      <button mat-icon-button (click)="close()" aria-label="Close drawer">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <ng-container *ngIf="loading">
+        <div class="drawer-loader">
+          <mat-spinner diameter="32"></mat-spinner>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="!loading">
+  <div class="steps-title">Steps to Reproduce</div>
+        <div class="steps-content" *ngIf="steps; else noSteps">
+          <pre class="steps-pre">{{ steps }}</pre>
+        </div>
+        <ng-template #noSteps>
+          <div class="steps-empty">No steps found for this issue.</div>
+        </ng-template>
+        <!--render steps response from stream api-->
+
+        <!-- Orchestrator Response Section -->
+        <div class="orchestrator-response" *ngIf="orchestratorResponse.length > 0 || orchestratorLoading">
+          <div class="response-title">
+            <mat-icon>automation</mat-icon>
+            Automation Progress
+          </div>
+
+          <div class="response-loader" *ngIf="orchestratorLoading">
+            <mat-spinner diameter="24"></mat-spinner>
+            <span class="loader-text">Processing automation steps...</span>
+          </div>
+
+          <div class="response-timeline" *ngIf="orchestratorResponse.length > 0">
+            <div class="timeline-item"
+                 *ngFor="let response of orchestratorResponse; let i = index; trackBy: trackByResponseId"
+                 [ngClass]="'status-' + response.status">
+
+              <div class="timeline-marker">
+                <mat-icon [ngClass]="getStatusIconClass(response.status)">
+                  {{ getStatusIcon(response.status) }}
+                </mat-icon>
+              </div>
+
+              <div class="timeline-content">
+                <div class="response-header">
+                  <span class="response-index">Step {{ i + 1 }}</span>
+                  <span class="response-timestamp">{{ formatTimestamp(response.timestamp) }}</span>
+                  <span class="response-status-badge" [ngClass]="'badge-' + response.status">
+                    {{ response.status | titlecase }}
+                  </span>
+                </div>
+                <div class="response-text">{{ response.content }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          mat-flat-button
+          color="primary"
+          class="auto-repro-btn"
+          (click)="showStepsAlert()"
+          *ngIf="steps"
+          [disabled]="orchestratorLoading"
+        >
+          {{ orchestratorLoading ? 'Processing...' : 'Auto Reproduce' }}
+        </button>
+
+        <!-- Test Button -->
+        <!-- <button
+          mat-flat-button
+          color="accent"
+          (click)="testOrchestratorResponse()"
+          style="margin-top: 10px; width: 100%;"
+        >
+          Test Response Rendering
+        </button> -->
+      </ng-container>
+    </div>
+  </div>
+</div>

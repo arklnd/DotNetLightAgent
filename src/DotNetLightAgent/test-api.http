@@ -1,0 +1,81 @@
+### DotNet Light Agent REST API Testing
+
+@baseUrl = https://localhost:7000
+@contentType = application/json
+
+### Health Check
+GET {{baseUrl}}/api/chat/health
+
+### Send a simple message (complete response)
+POST {{baseUrl}}/api/chat/message
+Content-Type: {{contentType}}
+
+{
+  "message": "Hello! What can you help me with today?",
+  "sessionId": "test-session-1"
+}
+
+### Send a message without session ID (will generate one)
+POST {{baseUrl}}/api/chat/message
+Content-Type: {{contentType}}
+
+{
+  "message": "Tell me a joke about programming"
+}
+
+### Send a streaming message
+POST {{baseUrl}}/api/chat/stream
+Content-Type: {{contentType}}
+
+{
+  "message": "Explain how dependency injection works in .NET in detail",
+  "sessionId": "streaming-session-1"
+}
+
+### Send another message to test conversation continuity
+POST {{baseUrl}}/api/chat/message
+Content-Type: {{contentType}}
+
+{
+  "message": "Can you give me a code example of that?",
+  "sessionId": "test-session-1"
+}
+
+### Get conversation history
+GET {{baseUrl}}/api/chat/history?sessionId=test-session-1
+
+### Get default session history
+GET {{baseUrl}}/api/chat/history
+
+### Clear specific session history
+POST {{baseUrl}}/api/chat/clear
+Content-Type: {{contentType}}
+
+{
+  "sessionId": "test-session-1"
+}
+
+### Clear default session history
+POST {{baseUrl}}/api/chat/clear
+Content-Type: {{contentType}}
+
+{
+}
+
+### Test with function calling capabilities
+POST {{baseUrl}}/api/chat/message
+Content-Type: {{contentType}}
+
+{
+  "message": "Turn on the lights in the living room",
+  "sessionId": "lights-session"
+}
+
+### Test streaming with function calls
+POST {{baseUrl}}/api/chat/stream
+Content-Type: {{contentType}}
+
+{
+  "message": "What lights are currently available and what's their current state?",
+  "sessionId": "lights-session"
+}
